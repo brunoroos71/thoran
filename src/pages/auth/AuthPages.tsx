@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { PLANS } from '@/config/pricing';
+import { googleAuthEnabled } from '@/lib/env';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '@/i18n';
 import { useAuth } from '@/services/authService';
@@ -10,6 +11,7 @@ import { AuthShell } from './AuthShell';
 
 function GoogleButton() {
   const { t } = useI18n();
+  if (!googleAuthEnabled) return null;
   const { signInWithGoogle } = useAuth();
   const nav = useNavigate();
   return (

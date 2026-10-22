@@ -8,17 +8,18 @@ cd "$(dirname "$0")/.."
 set -a; source .env.production.local; set +a
 
 need() { [ -n "${!1:-}" ] || { echo "Falta $1 em .env.production.local"; exit 1; }; }
-for v in SUPABASE_PROJECT_REF SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET RESEND_API_KEY SITE_URL; do need "$v"; done
+for v in SUPABASE_PROJECT_REF SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET SITE_URL; do need "$v"; done
+[ -n "${RESEND_API_KEY:-}" ] || echo "  (sem RESEND_API_KEY: e-mails automáticos ficam desligados por enquanto)"
 
 echo "▸ 1/5 Banco (migrações)"
-npx -y supabase@latest link --project-ref "$SUPABASE_PROJECT_REF"
-npx -y supabase@latest db push
+npx -y supabase@latest link --project-ref "$SUPABASE_PROJECT_REF" ${SUPABASE_DB_PASSWORD:+-p "$SUPABASE_DB_PASSWORD"} >/dev/null
+npx -y supabase@latest db push ${SUPABASE_DB_PASSWORD:+-p "$SUPABASE_DB_PASSWORD"} --yes
 
 echo "▸ 2/5 Segredos das Edge Functions"
 npx -y supabase@latest secrets set \
   SITE_URL="$SITE_URL" SITE_ORIGIN="$SITE_URL" \
   IP_SALT="${IP_SALT:-$(openssl rand -hex 16)}" CRON_SECRET="${CRON_SECRET:-$(openssl rand -hex 24)}" \
-  RESEND_API_KEY="$RESEND_API_KEY" EMAIL_FROM="${EMAIL_FROM:-Thoran <ola@thoran.com.br>}" \
+  ${RESEND_API_KEY:+RESEND_API_KEY="$RESEND_API_KEY"} ${RESEND_API_KEY:+EMAIL_FROM="${EMAIL_FROM:-Thoran <ola@thoran.com.br>}"} \
   BILLING_GATEWAY=stripe STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
   ${AGENT_API_URL:+AGENT_API_URL="$AGENT_API_URL"} ${AGENT_API_KEY:+AGENT_API_KEY="$AGENT_API_KEY"}
 
@@ -30,7 +31,7 @@ STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" SUPABASE_URL="$SUPABASE_URL" SUPABASE_SER
 
 echo "▸ 5/5 Site na Vercel"
 for kv in "VITE_SUPABASE_URL=$SUPABASE_URL" "VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" "VITE_SITE_URL=$SITE_URL" \
-          "WAITLIST_MODE=${WAITLIST_MODE:-false}" "AGENT_MODE=${AGENT_MODE:-mock}" "BILLING_MODE=live"; do
+          "WAITLIST_MODE=${WAITLIST_MODE:-false}" "AGENT_MODE=${AGENT_MODE:-mock}" "BILLING_MODE=live" "VITE_GOOGLE_AUTH=${VITE_GOOGLE_AUTH:-false}"; do
   k="${kv%%=*}"; v="${kv#*=}"
   vercel env rm "$k" production -y >/dev/null 2>&1 || true
   printf '%s' "$v" | vercel env add "$k" production >/dev/null
@@ -38,4 +39,4 @@ done
 vercel deploy --prod
 
 echo
-echo "✓ No ar. Faltam 3 cliques manuais (ver README › Colocar no ar): webhook do Stripe, Google OAuth e agendar o billing-cron."
+echo "✓ No ar com Supabase e Stripe (modo teste). Opcional depois: Google OAuth, Resend e agendar o billing-cron (README › Colocar no ar)."

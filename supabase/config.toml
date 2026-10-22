@@ -2,11 +2,17 @@
 project_id = "thoran"
 
 [auth]
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/app", "http://localhost:5173/app/onboarding", "http://localhost:5173/nova-senha"]
+site_url = "env(SITE_URL)"
+additional_redirect_urls = ["https://thoran-rho.vercel.app/app", "https://thoran-rho.vercel.app/nova-senha", "https://thoran.com.br/app", "https://thoran.com.br/nova-senha", "http://localhost:5173/app", "http://localhost:5173/nova-senha"]
+
+[auth.email]
+enable_signup = true
+# sem confirmação por e-mail: quem pergunta na home recebe a resposta na hora (menos atrito)
+enable_confirmations = false
 
 [auth.external.google]
-enabled = true
+# ligue depois de criar as credenciais OAuth no Google Cloud (e VITE_GOOGLE_AUTH=true no front)
+enabled = false
 client_id = "env(GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_CLIENT_SECRET)"
 
