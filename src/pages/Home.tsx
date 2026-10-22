@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useI18n } from '@/i18n';
 import { track } from '@/lib/analytics';
 import { useTitle } from '@/hooks/useTitle';
+import { useTypewriter } from '@/hooks/useTypewriter';
 import { useAuth } from '@/services/authService';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { Composer, Greeting, Suggestions } from '@/components/chat/Composer';
@@ -16,6 +17,8 @@ export default function Home() {
   const { user, loading } = useAuth();
   const [input, setInput] = useState('');
   const [gate, setGate] = useState(false);
+  // exemplos de pergunta digitando e apagando, para mostrar o que dá para pesquisar
+  const typed = useTypewriter(h.typing, { paused: input.length > 0 || gate });
 
   if (!loading && user) return <Navigate to="/app" replace />;
 
@@ -37,7 +40,7 @@ export default function Home() {
       <section className="flex flex-1 flex-col items-center justify-center px-4 pb-16 pt-6 sm:px-6">
         <div className="flex w-full max-w-3xl flex-col gap-8">
           <Greeting title={h.greeting} sub={h.sub} />
-          <Composer value={input} onChange={setInput} onSubmit={() => send(input)} placeholder={h.placeholder} label={t.app.send} autoFocus size="lg" />
+          <Composer value={input} onChange={setInput} onSubmit={() => send(input)} placeholder={typed} label={t.app.send} autoFocus size="lg" />
           <Suggestions items={h.suggestions} onPick={send} />
         </div>
       </section>

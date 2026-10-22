@@ -80,4 +80,31 @@ for (const p of await plans()) {
     console.log(`+ ${lookup}: ${price.id} (R$ ${(cents / 100).toFixed(2).replace('.', ',')})`);
   }
 }
+// Webhook: cria o endpoint do billing-webhook (o segredo whsec_ só aparece na criação)
+const ref = process.env.SUPABASE_PROJECT_REF;
+if (ref) {
+  const url = `https://${ref}.supabase.co/functions/v1/billing-webhook`;
+  const events = [
+    'checkout.session.completed',
+    'checkout.session.async_payment_succeeded',
+    'checkout.session.async_payment_failed',
+    'invoice.paid',
+    'invoice.payment_failed',
+    'customer.subscription.updated',
+    'customer.subscription.deleted',
+  ];
+  const existing = (await stripe('GET', 'webhook_endpoints?limit=100')).data.find((w) => w.url === url && w.status === 'enabled');
+  if (existing && process.env.STRIPE_WEBHOOK_SECRET) {
+    await stripe('POST', `webhook_endpoints/${existing.id}`, { enabled_events: events });
+    console.log(`= webhook: ${existing.id} (já configurado)`);
+  } else if (existing) {
+    console.log(`! webhook ${existing.id} existe, mas o segredo não está no .env.production.local. Copie o "Signing secret" no painel da Stripe (Developers › Webhooks) para STRIPE_WEBHOOK_SECRET.`);
+  } else {
+    const wh = await stripe('POST', 'webhook_endpoints', { url, enabled_events: events, description: 'Thoran · billing-webhook (Supabase)', api_version: '2024-06-20' });
+    const { execFileSync } = await import('node:child_process');
+    const { fileURLToPath } = await import('node:url');
+    execFileSync('node', [fileURLToPath(new URL('./env-set.mjs', import.meta.url)), 'STRIPE_WEBHOOK_SECRET'], { input: wh.secret, stdio: ['pipe', 'inherit', 'inherit'] });
+    console.log(`+ webhook: ${wh.id} → ${url}`);
+  }
+}
 console.log('\nPronto. Recarga usa price_data com o valor de credit_config.topup_cents (não precisa de preço fixo).');

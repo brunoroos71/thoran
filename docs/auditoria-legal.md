@@ -7,8 +7,8 @@ Arquivos e linhas são os de antes deste PR. Os códigos entre colchetes são os
 ## Resumo
 
 - **Resolvidos neste PR:** 5 itens (gráfico, aviso, recusa, alerta de risco do agente, etiqueta do mock).
-- **Em parte:** 4.
-- **Pendentes:** 25. A maioria é texto do site e decisão de produto ou de posicionamento (Alertas, slogan, planos, onboarding, landing), que fica com quem decide o produto.
+- **Em parte:** 5 (inclui os textos jurídicos que o Bruno escreveu em 22/10).
+- **Pendentes:** 24. A maioria é texto do site e decisão de produto ou de posicionamento (Alertas, slogan, planos, onboarding, landing), que fica com quem decide o produto.
 - **Antes de abrir para o público:** os itens de gravidade alta que seguem pendentes, os textos jurídicos (item 13) revisados por advogado e `BILLING_MODE=live` só depois disso.
 
 ## Gravidade alta
@@ -115,7 +115,7 @@ Arquivos e linhas são os de antes deste PR. Os códigos entre colchetes são os
 
 **O que fazer:** Não ligar BILLING_MODE=live nem abrir cadastro sem os três textos finais revisados por advogado. O Aviso de risco tem de trazer, no mínimo: o texto de D4 (alavancagem, margem, ajuste diário, perda maior que o depositado, taxa-base FGV de 97%), o de D5 (cripto à vista em regra não é valor mobiliário, sem proteção da CVM, corretoras reguladas pelo Banco Central com autorização em curso até 30/10/2026) e o D3.
 
-**Situação:** Pendente.
+**Situação:** **Em parte.** O Bruno escreveu os três textos em 22/10 (`src/content/legal/`). Falta a revisão do advogado e conferir se o Aviso de risco traz o D4 e o D5 por inteiro.
 
 ### 14. [D4, D5] `src/pages/app/Chat.tsx:207`
 

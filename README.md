@@ -58,7 +58,13 @@ As flags são lidas no build (Vite). Mudou a flag → gere o build de novo.
 | [Vercel](https://vercel.com) | hospedagem do site | grátis |
 | Domínio (ex.: Registro.br) | thoran.com.br | anual |
 
-**Passo a passo**
+**Atalho (recomendado):** depois de criar as contas na Stripe e no Supabase, com a chave `sk_test_` colada em `.env.production.local` e `npx supabase login` feito, rode:
+```bash
+bash scripts/setup-backend.sh
+```
+Ele cria o projeto no Supabase (região São Paulo), busca as chaves, aplica o banco e a configuração de login (sem confirmação de e-mail, Google desligado), cria preços e o webhook na Stripe, publica as funções e o site com `BILLING_MODE=live`. Pode rodar de novo quantas vezes precisar.
+
+**Passo a passo manual**
 1. **Supabase:** crie o projeto (região São Paulo) e copie `Project ref`, `URL`, `anon key` e `service_role key` (Settings › API).
 2. **Stripe (modo teste):** ative cartão e Pix. Em Developers › Webhooks, crie o endpoint
    `https://<project-ref>.supabase.co/functions/v1/billing-webhook` com os 7 eventos listados em *Stripe: passo a passo* e copie o `whsec_…`.

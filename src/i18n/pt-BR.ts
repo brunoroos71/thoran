@@ -129,10 +129,27 @@ const ptBR = {
     'Minério de ferro cai 4% na China',
     'Halving do bitcoin se aproxima',
   ],
+  legalConsent: {
+    pre: 'Ao continuar, você concorda com os ',
+    terms: 'Termos de Uso',
+    and: ' e a ',
+    privacy: 'Política de Privacidade',
+    mid: ', e declara ter lido o ',
+    risk: 'Aviso de Risco',
+  },
   home: {
     greeting: 'O que aconteceu no mercado hoje?',
     sub: 'Cole uma notícia. O Thoran mostra como o mercado reagiu nos casos parecidos dos últimos 10 anos.',
     placeholder: 'Pergunte ao Thoran',
+    typing: [
+      'Devo comprar dólar hoje?',
+      'Como as eleições estão afetando o mercado?',
+      'O Copom subiu os juros. E o mini-índice?',
+      'O que costuma acontecer com o bitcoin depois do halving?',
+      'Payroll forte nos EUA mexe com a bolsa?',
+      'IPCA veio acima do esperado. E o dólar?',
+      'Petrobras anunciou dividendos. Como a ação reagiu antes?',
+    ],
     suggestions: [
       'O que aconteceu com o Ibovespa nos turnos das eleições desde 2018?',
       'Como o dólar reagiu quando o Copom surpreendeu o Focus?',

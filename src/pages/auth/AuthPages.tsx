@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { PLANS } from '@/config/pricing';
+import { googleAuthEnabled } from '@/lib/env';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '@/i18n';
 import { useAuth } from '@/services/authService';
@@ -10,6 +11,7 @@ import { AuthShell } from './AuthShell';
 
 function GoogleButton() {
   const { t } = useI18n();
+  if (!googleAuthEnabled) return null;
   const { signInWithGoogle } = useAuth();
   const nav = useNavigate();
   return (
@@ -148,17 +150,12 @@ export function SignupPage() {
             <Field label={a.email} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <Field label={a.password} type="password" autoComplete="new-password" hint={a.passwordHint} value={password} onChange={(e) => setPassword(e.target.value)} required error={err} />
             <p className="text-xs leading-relaxed text-meta">
-              <Link to="/termos" className="underline">
-                {t.footer.terms}
-              </Link>{' '}
-              ·{' '}
-              <Link to="/privacidade" className="underline">
-                {t.footer.privacy}
-              </Link>{' '}
-              ·{' '}
-              <Link to="/aviso-de-risco" className="underline">
-                {t.footer.risk}
-              </Link>
+              {t.legalConsent.pre}
+              <Link to="/termos" target="_blank" className="underline">{t.legalConsent.terms}</Link>
+              {t.legalConsent.and}
+              <Link to="/privacidade" target="_blank" className="underline">{t.legalConsent.privacy}</Link>
+              {t.legalConsent.mid}
+              <Link to="/aviso-de-risco" target="_blank" className="underline">{t.legalConsent.risk}</Link>.
             </p>
             <Button type="submit" size="lg" disabled={busy} arrow>
               {busy ? t.common.loading : a.submitSignup}

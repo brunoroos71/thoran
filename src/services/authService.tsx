@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { supabase } from '@/lib/supabase';
 import { readLS, writeLS } from '@/lib/storage';
 import { getProfile, upsertProfile, type Profile } from './profileService';
+import { LEGAL_VERSION } from '@/config/company';
 
 export interface AuthUser {
   id: string;
@@ -33,7 +34,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (u: AuthUser | null) => {
-    setProfile(u ? await getProfile(u.id) : null);
+    let p = u ? await getProfile(u.id) : null;
+    // aceite dos documentos legais: quem entra pelo Google (ou por uma versão antiga) registra a versão vigente.
+    // Todos os caminhos de cadastro mostram o texto de concordância antes deste ponto.
+    if (u && (!p || p.terms_version !== LEGAL_VERSION)) {
+      try {
+        await upsertProfile({ id: u.id, terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString() });
+        p = await getProfile(u.id);
+      } catch {
+        /* o registro é tentado de novo no próximo acesso */
+      }
+    }
+    setProfile(p);
   }, []);
 
   useEffect(() => {
@@ -88,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { name }, emailRedirectTo: `${location.origin}/app` },
+          options: { data: { name, terms_version: LEGAL_VERSION }, emailRedirectTo: `${location.origin}/app` },
         });
         if (error) throw error;
         return { needsConfirmation: !data.session };

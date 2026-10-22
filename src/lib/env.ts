@@ -12,3 +12,6 @@ export const env = {
 };
 
 export const hasSupabase = Boolean(env.supabaseUrl && env.supabaseAnonKey);
+
+/** Login com Google: simulado no modo demonstração; no real, só depois de configurar o OAuth (VITE_GOOGLE_AUTH=true). */
+export const googleAuthEnabled = !hasSupabase || e.VITE_GOOGLE_AUTH === 'true';

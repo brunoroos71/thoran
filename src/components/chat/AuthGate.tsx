@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@/i18n';
-import { env } from '@/lib/env';
+import { env, googleAuthEnabled } from '@/lib/env';
 import { track } from '@/lib/analytics';
 import { useAuth } from '@/services/authService';
 import { Field } from '@/components/ui/Field';
@@ -72,6 +72,8 @@ export function AuthGate({ onClose }: { onClose: () => void }) {
           </p>
         ) : (
           <>
+            {googleAuthEnabled && (
+            <>
             <button
               type="button"
               onClick={() => signInWithGoogle().then(done)}
@@ -83,7 +85,9 @@ export function AuthGate({ onClose }: { onClose: () => void }) {
               {a.google}
             </button>
             <p className="my-5 flex items-center gap-4 text-xs text-meta before:h-px before:flex-1 before:bg-linha after:h-px after:flex-1 after:bg-linha">{a.or}</p>
-            <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+            </>
+            )}
+            <form onSubmit={submit} className={googleAuthEnabled ? 'flex flex-col gap-4' : 'mt-6 flex flex-col gap-4'} noValidate>
               <Field label={a.email} hideLabel placeholder={a.email} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               <Field
                 label={a.password}
@@ -107,7 +111,12 @@ export function AuthGate({ onClose }: { onClose: () => void }) {
               </button>
             </p>
             <p className="mt-4 text-center text-[11px] leading-relaxed text-meta">
-              <a href="/termos" className="underline">{t.footer.terms}</a> · <a href="/privacidade" className="underline">{t.footer.privacy}</a> · <a href="/aviso-de-risco" className="underline">{t.footer.risk}</a>
+              {t.legalConsent.pre}
+              <a href="/termos" target="_blank" className="underline hover:text-texto">{t.legalConsent.terms}</a>
+              {t.legalConsent.and}
+              <a href="/privacidade" target="_blank" className="underline hover:text-texto">{t.legalConsent.privacy}</a>
+              {t.legalConsent.mid}
+              <a href="/aviso-de-risco" target="_blank" className="underline hover:text-texto">{t.legalConsent.risk}</a>.
             </p>
           </>
         )}
