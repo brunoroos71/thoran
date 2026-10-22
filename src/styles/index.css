@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { @apply bg-carbono text-texto antialiased; scroll-behavior: smooth; }
+  body { @apply font-sans; }
+  ::selection { @apply bg-raio text-carbono; }
+  :focus-visible { outline: 2px solid theme(colors.raio); outline-offset: 3px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+}
+
+@layer components {
+  /* Rótulo mono em caixa alta (ex.: "A1 · SISTEMA DE LOGO") */
+  .label { @apply font-mono text-xs uppercase tracking-label; }
+  .wrap { @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-12; }
+  /* Linguagem gráfica: listras diagonais da capa */
+  .stripes {
+    background-image: repeating-linear-gradient(-68deg, transparent 0 22px, theme(colors.linha) 22px 32px);
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(theme(colors.grafite) 1px, transparent 1px),
+      linear-gradient(90deg, theme(colors.grafite) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .reveal { opacity: 0; transform: translateY(48px); transition: opacity .9s cubic-bezier(.2,.7,.1,1), transform .9s cubic-bezier(.2,.7,.1,1); }
+  .reveal.is-in { opacity: 1; transform: none; }
+}
+
+/* ───────────── Efeitos interativos ───────────── */
+@layer components {
+  /* Card com borda que acende onde o cursor está (vars --mx/--my via SpotCard) */
+  .spot {
+    position: relative;
+    isolation: isolate;
+    background: theme(colors.grafite);
+    border-radius: 24px;
+  }
+  .spot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background:
+      radial-gradient(320px circle at var(--mx, -999px) var(--my, -999px), rgb(125 216 255 / .55), transparent 60%),
+      theme(colors.linha);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .spot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(480px circle at var(--mx, -999px) var(--my, -999px), rgb(125 216 255 / .06), transparent 55%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .glass { background: rgb(11 13 16 / .72); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); }
+  .hairline { box-shadow: inset 0 1px 0 rgb(238 241 244 / .06); }
+  .text-gradient-fade { -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent); mask-image: linear-gradient(180deg, #000 60%, transparent); }
+}
+
+@media (pointer: fine) {
+  .has-cursor, .has-cursor a, .has-cursor button, .has-cursor summary, .has-cursor label { cursor: none; }
+  .has-cursor input, .has-cursor textarea { cursor: text; }
+}

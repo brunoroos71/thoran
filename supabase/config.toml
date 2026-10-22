@@ -1,0 +1,32 @@
+# Config mínima para `supabase start` / `supabase functions serve`.
+project_id = "thoran"
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/app", "http://localhost:5173/app/onboarding", "http://localhost:5173/nova-senha"]
+
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
+
+[functions.waitlist-join]
+verify_jwt = false   # público; protegido por honeypot + limite por IP
+
+[functions.admin-waitlist]
+verify_jwt = true
+
+[functions.agent-proxy]
+verify_jwt = true
+
+[functions.market-data]
+verify_jwt = false   # público; lista fechada de símbolos + cache de 60 s
+
+[functions.billing]
+verify_jwt = true
+
+[functions.billing-webhook]
+verify_jwt = false   # autenticado pela assinatura do gateway
+
+[functions.billing-cron]
+verify_jwt = false   # protegido por CRON_SECRET
