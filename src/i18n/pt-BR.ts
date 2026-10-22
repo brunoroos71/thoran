@@ -127,6 +127,14 @@ const ptBR = {
     'Minério de ferro cai 4% na China',
     'Halving do bitcoin se aproxima',
   ],
+  legalConsent: {
+    pre: 'Ao continuar, você concorda com os ',
+    terms: 'Termos de Uso',
+    and: ' e a ',
+    privacy: 'Política de Privacidade',
+    mid: ', e declara ter lido o ',
+    risk: 'Aviso de Risco',
+  },
   home: {
     greeting: 'O que aconteceu no mercado hoje?',
     sub: 'Cole uma notícia. O Thoran mostra como o mercado reagiu nos casos parecidos dos últimos 10 anos.',

@@ -107,7 +107,12 @@ export function AuthGate({ onClose }: { onClose: () => void }) {
               </button>
             </p>
             <p className="mt-4 text-center text-[11px] leading-relaxed text-meta">
-              <a href="/termos" className="underline">{t.footer.terms}</a> · <a href="/privacidade" className="underline">{t.footer.privacy}</a> · <a href="/aviso-de-risco" className="underline">{t.footer.risk}</a>
+              {t.legalConsent.pre}
+              <a href="/termos" target="_blank" className="underline hover:text-texto">{t.legalConsent.terms}</a>
+              {t.legalConsent.and}
+              <a href="/privacidade" target="_blank" className="underline hover:text-texto">{t.legalConsent.privacy}</a>
+              {t.legalConsent.mid}
+              <a href="/aviso-de-risco" target="_blank" className="underline hover:text-texto">{t.legalConsent.risk}</a>.
             </p>
           </>
         )}

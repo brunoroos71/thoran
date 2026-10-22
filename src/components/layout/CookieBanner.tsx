@@ -17,7 +17,7 @@ export function CookieBanner() {
     <div role="region" aria-label="Cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto flex max-w-2xl flex-col gap-4 rounded-card border border-linha bg-grafite p-5 sm:flex-row sm:items-center">
       <p className="flex-1 text-sm text-nevoa">
         {t.cookies.text}{' '}
-        <Link to="/privacidade" className="text-texto underline">
+        <Link to="/privacidade#cookies" className="text-texto underline">
           {t.cookies.more}
         </Link>
       </p>

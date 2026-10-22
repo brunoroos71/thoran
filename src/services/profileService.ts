@@ -13,6 +13,8 @@ export interface Profile {
   plan: Plan;
   locale: 'pt-BR' | 'en-US';
   onboarded: boolean;
+  terms_version?: string | null;
+  terms_accepted_at?: string | null;
 }
 
 const LS = 'thoran.demo.profile';
