@@ -1,82 +1,85 @@
-import { useMemo } from 'react';
+import { useId } from 'react';
 import type { AnalysisResponse } from '@/services/agent';
-import type { Candle } from '@/services/marketService';
-import { cx } from '@/lib/format';
-import { CandleChart } from './CandleChart';
+import { cx, fmtMove } from '@/lib/format';
 
 interface Props {
-  chart: AnalysisResponse['chart'];
+  chart: NonNullable<AnalysisResponse['chart']>;
   label: string;
-  nowLabel: string;
-  todayLabel: string;
+  dayLabel: string;
   pastLabel: string;
   className?: string;
   height?: number;
 }
 
-const SUB = 3; // velas por ponto da série
-const LEAD = 14; // velas antes do anúncio
+/**
+ * Só o passado: o caminho de cada caso parecido, de antes a depois do evento (marcado em now_index), a partir do
+ * fechamento da véspera. Sem vela de "hoje", sem preço de agora e sem projetar os casos para a frente
+ * (Regras do agente, N2 e N6). `chart.current` é ignorado.
+ */
+export function PrecedentChart({ chart, label, dayLabel, pastLabel, className, height = 220 }: Props) {
+  const clip = useId();
+  const paths = chart.precedents.filter((p) => p.length > 1);
+  if (!paths.length) return null;
 
-/** Converte a série "current" do contrato em velas (determinístico, para não piscar). */
-function toCandles(series: number[]): Candle[] {
-  const out: Candle[] = [];
-  let seed = 7;
-  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-  // pregão antes do evento: oscilação lateral em torno de zero, para dar contexto
-  let p = 0;
-  for (let i = 0; i < LEAD; i++) {
-    const o = p;
-    const c = i === LEAD - 1 ? 0 : (rnd() - 0.5) * 0.16;
-    out.push({ t: -100 + i, o, c, h: Math.max(o, c) + rnd() * 0.05, l: Math.min(o, c) - rnd() * 0.05 });
-    p = c;
-  }
-  for (let i = 1; i < series.length; i++) {
-    const a = series[i - 1];
-    const b = series[i];
-    for (let k = 0; k < SUB; k++) {
-      const o = a + ((b - a) * k) / SUB + (k ? (rnd() - 0.5) * 0.06 : 0);
-      const c = k === SUB - 1 ? b : a + ((b - a) * (k + 1)) / SUB + (rnd() - 0.5) * 0.08;
-      out.push({ t: i * 10 + k, o, c, h: Math.max(o, c) + rnd() * 0.06, l: Math.min(o, c) - rnd() * 0.06 });
-    }
-  }
-  return out;
-}
-
-/** Hoje em velas até "agora"; depois, o leque do que aconteceu nos precedentes. */
-export function PrecedentChart({ chart, label, nowLabel, todayLabel, pastLabel, className, height = 220 }: Props) {
-  const candles = useMemo(() => toCandles(chart.current.slice(0, chart.now_index + 1)), [chart]);
-  const last = candles[candles.length - 1]?.c ?? 0;
-  const tailLen = Math.max(...chart.precedents.map((p) => p.length)) - chart.now_index - 1;
-  // cada precedente continua a partir do preço de agora, com o mesmo formato de movimento
-  const overlays = chart.precedents.map((p) => {
-    const base = p[chart.now_index] ?? 0;
-    const tail = p.slice(chart.now_index).map((v) => last + (v - base));
-    const stretched: number[] = [];
-    tail.forEach((v, i) => {
-      if (i === 0) return stretched.push(v);
-      const prev = tail[i - 1];
-      for (let k = 1; k <= SUB; k++) stretched.push(prev + ((v - prev) * k) / SUB);
-    });
-    return { values: stretched, startSlot: candles.length - 1, className: 'stroke-aco', width: 1.25 };
-  });
-  const fmt = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}${chart.unit}`;
+  const W = 640;
+  const H = height;
+  const pad = { t: 14, r: 64, b: 14, l: 8 };
+  const n = Math.max(...paths.map((p) => p.length));
+  const vals = [0, ...paths.flat()];
+  const lo = Math.min(...vals);
+  const hi = Math.max(...vals);
+  const m = (hi - lo) * 0.08 || 1;
+  const min = lo - m;
+  const max = hi + m;
+  const x = (i: number) => pad.l + ((W - pad.l - pad.r) * i) / (n - 1);
+  const y = (v: number) => pad.t + ((max - v) / (max - min)) * (H - pad.t - pad.b);
+  const ticks = [max - (max - min) * 0.08, 0, min + (max - min) * 0.08];
+  const fmt = (v: number) => fmtMove(Number(v.toFixed(1)), chart.unit);
+  const day = Math.min(Math.max(chart.now_index, 0), n - 1);
 
   return (
-    <div className={cx('w-full', className)}>
-      <CandleChart candles={candles} extraSlots={tailLen * SUB} overlays={overlays} nowLabel={nowLabel} height={height} label={label} format={fmt} />
-      <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] uppercase tracking-widest text-meta">
-        <span className="flex items-center gap-2">
-          <span aria-hidden className="inline-flex gap-0.5">
-            <span className="h-3 w-1.5 border border-alta" />
-            <span className="h-3 w-1.5 bg-baixa" />
-          </span>
-          {todayLabel}
-        </span>
+    <figure className={cx('w-full', className)}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full select-none" role="img" aria-label={label}>
+        <defs>
+          <clipPath id={clip}>
+            <rect x={pad.l} y={0} width={W - pad.l - pad.r} height={H} />
+          </clipPath>
+        </defs>
+        {ticks.map((v, i) => (
+          <g key={i}>
+            <line x1={pad.l} x2={W - pad.r} y1={y(v)} y2={y(v)} className={v === 0 ? 'stroke-nevoa/40' : 'stroke-linha'} strokeDasharray={v === 0 ? undefined : '2 5'} />
+            <text x={W - pad.r + 8} y={y(v) + 4} className="fill-meta font-mono text-[11px]">
+              {fmt(v)}
+            </text>
+          </g>
+        ))}
+        <line x1={x(day)} x2={x(day)} y1={pad.t} y2={H - pad.b} className="stroke-raio/60" strokeDasharray="3 3" />
+        <text x={x(day) + 6} y={pad.t + 10} className="fill-raio font-mono text-[10px] uppercase tracking-widest">
+          {dayLabel}
+        </text>
+        <g clipPath={`url(#${clip})`}>
+          {paths.map((p, k) => (
+            <path
+              key={k}
+              d={p.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')}
+              fill="none"
+              className="stroke-aco"
+              strokeOpacity={0.85}
+              strokeWidth={1.25}
+            />
+          ))}
+        </g>
+      </svg>
+      <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] uppercase tracking-widest text-meta">
         <span className="flex items-center gap-2">
           <span aria-hidden className="h-px w-5 bg-aco" />
           {pastLabel}
         </span>
-      </p>
-    </div>
+        <span className="flex items-center gap-2">
+          <span aria-hidden className="h-3 w-px border-l border-dashed border-raio" />
+          {dayLabel}
+        </span>
+      </figcaption>
+    </figure>
   );
 }

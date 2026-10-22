@@ -40,16 +40,21 @@ export default function History() {
                     <span className="block truncate text-sm text-meta">“{r.question}”</span>
                   </span>
                   <span className="font-mono text-xs text-nevoa md:col-span-2">
-                    {r.response.precedents.count} {t.common.cases} · {fmtYear(r.response.precedents.period.from)}–{fmtYear(r.response.precedents.period.to)}
+                    {r.response.precedents.count > 0
+                      ? `${r.response.precedents.count} ${t.common.cases} · ${fmtYear(r.response.precedents.period.from)}–${fmtYear(r.response.precedents.period.to)}`
+                      : t.precedent.noCases}
                   </span>
                   <span className="flex items-center gap-3 md:col-span-2 md:justify-end">
-                    {s && (
+                    {/* manchete só para estatística com direção (demonstração); a do agente real é neutra (N3) */}
+                    {s && s.direction !== 'neutral' && (
                       <span className={`font-mono text-sm ${dirColor(s.direction)}`}>
                         <DirArrow dir={s.direction} className="mr-1 text-[0.7em]" />
                         {s.value}
                       </span>
                     )}
-                    <RelevanceBadge level={r.response.event.relevance} label={t.precedent.relevance[r.response.event.relevance]} />
+                    {r.response.event.relevance && (
+                      <RelevanceBadge level={r.response.event.relevance} label={t.precedent.relevance[r.response.event.relevance]} />
+                    )}
                   </span>
                 </Link>
               </li>

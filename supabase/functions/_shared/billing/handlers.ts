@@ -42,10 +42,12 @@ export async function applyEvent(e: BillingEvent) {
     }
     case 'topup.paid': {
       const { data: cfg } = await admin.from('credit_config').select('value').eq('key', 'topup_credits').maybeSingle();
-      await admin.from('credit_ledger').upsert(
-        { user_id: e.userId, amount: cfg?.value ?? 50, kind: 'recarga', bucket: 'recarga', reference: e.paymentId },
-        { onConflict: 'user_id,kind,bucket,reference', ignoreDuplicates: true },
-      );
+      // insert, não upsert: o índice único do ledger é parcial, e ON CONFLICT (colunas) sem o WHERE dele dá 42P10.
+      // Pagamento repetido (webhook reenviado) bate no índice e volta 23505: aí não lança de novo.
+      const { error } = await admin
+        .from('credit_ledger')
+        .insert({ user_id: e.userId, amount: cfg?.value ?? 50, kind: 'recarga', bucket: 'recarga', reference: e.paymentId });
+      if (error && error.code !== '23505') throw error;
       await recordInvoice(e.userId, e.amountCents, 'Recarga de créditos Thoran', e.paymentId);
       return;
     }

@@ -33,9 +33,9 @@ design e fluxos; para publicar, configure o Supabase.
 | `WAITLIST_MODE` | front | `true`: só landing + lista. `false`: CTAs viram "Criar conta" e `/app` é liberado |
 | `AGENT_MODE` | front | `mock`: agente simulado no navegador. `live`: chama `/agent-proxy` |
 | `BILLING_MODE` | front | `mock`: assinatura e créditos simulados no navegador. `live`: Supabase + Edge Function `/billing` |
-| `BILLING_GATEWAY` | Edge Function | `stripe` ou `mock` |
+| `BILLING_GATEWAY` | Edge Function | `stripe` ou `mock`. Sem ele, a cobrança fica desligada (o `mock` aprova tudo de graça: só em teste) |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Edge Function | chaves do Stripe (nunca no front) |
-| `CRON_SECRET` | Edge Function | protege a rotina diária `billing-cron` |
+| `CRON_SECRET` | Edge Function | protege a rotina diária `billing-cron` (sem ele, a rotina recusa toda chamada) |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | front | projeto Supabase (chaves públicas) |
 | `VITE_ANALYTICS_PIXEL_ID` | front | se preenchido, o banner de cookies LGPD aparece e os eventos só disparam com consentimento |
 | `VITE_SITE_URL` | front | URL pública |
@@ -74,7 +74,7 @@ Ele cria o projeto no Supabase (região São Paulo), busca as chaves, aplica o b
    ```bash
    bash scripts/go-live.sh
    ```
-   O script aplica as migrações, configura os segredos, publica as 7 Edge Functions, cria os preços no Stripe e publica o site na Vercel.
+   O script aplica as migrações, configura os segredos, publica as 6 Edge Functions, cria os preços no Stripe e publica o site na Vercel.
 6. **Ajustes manuais finais:**
    - Supabase › Authentication › URL Configuration: Site URL = seu domínio; Redirect URLs = `/app`, `/app/onboarding`, `/nova-senha`.
    - Supabase › Authentication › Providers › Google: client ID/secret do Google Cloud (OAuth consent screen).
@@ -90,7 +90,7 @@ Ele cria o projeto no Supabase (região São Paulo), busca as chaves, aplica o b
    - Vire admin: `update profiles set is_admin = true where id = (select id from auth.users where email = 'voce@…');`
    - Vercel › Domains: aponte o domínio.
 7. **Teste ponta a ponta** com cartão `4242 4242 4242 4242` e um Pix de teste. Quando estiver tudo certo, troque as chaves do Stripe para as de produção e rode o script de novo.
-8. **Agente real:** o site já sobe como produto no ar (`WAITLIST_MODE=false`). Quando a API do agente existir, troque `AGENT_MODE=live` e rode o script de novo. Para voltar ao modo lista de espera, use `WAITLIST_MODE=true`.
+8. **Agente real:** o site já sobe como produto no ar (`WAITLIST_MODE=false`). Para ligar o agente, veja *Ligar o agente real* e troque `AGENT_MODE=live`. Para voltar ao modo lista de espera, use `WAITLIST_MODE=true`.
 
 ## Supabase
 
@@ -98,8 +98,18 @@ Ele cria o projeto no Supabase (região São Paulo), busca as chaves, aplica o b
 supabase link --project-ref <ref>
 supabase db push                                   # aplica supabase/migrations
 supabase secrets set --env-file supabase/functions/.env
-supabase functions deploy waitlist-join admin-waitlist agent-proxy market-data billing billing-webhook billing-cron
+supabase functions deploy waitlist-join admin-waitlist agent-proxy billing billing-webhook billing-cron
 ```
+
+- **Publicação automática:** `.github/workflows/supabase.yml` roda `db push` e publica as funções a cada merge na
+  `main` que mexa em `supabase/`. Precisa do segredo `SUPABASE_ACCESS_TOKEN` no GitHub (instruções no topo do arquivo).
+  Migração já aplicada não roda de novo: para mudar o banco, crie um arquivo novo em vez de editar um antigo.
+- **Permissões:** toda tabela nova precisa de `grant` explícito para `authenticated`/`anon`, e toda função
+  `security definer` precisa de `revoke execute ... from public` (só tirar de `anon` e `authenticated` não basta).
+  Modelo em `migrations/20261025000000_agente_real.sql`.
+- **Login nas funções:** o projeto assina os logins com as chaves novas (ES256). As funções com login ficam com
+  `verify_jwt = false` e conferem o token dentro (`_shared/supabase.ts › userFromRequest`).
+- **market-data** não é publicada: busca cotação sem licença (auditoria legal, item 10).
 
 - **Admin:** depois de criar sua conta, rode no SQL editor
   `update profiles set is_admin = true where id = (select id from auth.users where email = 'voce@…');`
@@ -121,27 +131,37 @@ src/
   services/            waitlist, auth, history, feedback, profile, alerts, admin
   i18n/                pt-BR.ts (todas as strings), en-US.ts (fallback para pt-BR)
 supabase/
-  migrations/          schema completo (waitlist, profiles, analyses, agent_usage, feedback, alerts, agent_calls)
+  migrations/          schema completo (waitlist, profiles, analyses, feedback, alerts, agent_calls, créditos, auditoria_agente)
   functions/           waitlist-join, admin-waitlist, agent-proxy, _shared/
 ```
 
 ## Ligar o agente real
 
-1. Quem constrói a API implementa `POST /analyze` seguindo **exatamente** `src/services/agent/types.ts`
-   (entrada `{ query, market, locale }`, saída `AnalysisResponse`).
-2. A API pode responder de dois jeitos (o proxy aceita ambos):
-   - **Streaming (recomendado):** `Content-Type: text/event-stream` com quadros
-     `event: text` + `data: {"delta":"..."}` (pedaços do texto), depois um ou mais
-     `event: analysis` + `data: <AnalysisResponse>`, e por fim `event: done`.
-   - **JSON simples:** `Content-Type: application/json` com um `AnalysisResponse`. O proxy transforma em stream.
-3. Configure os segredos: `supabase secrets set AGENT_API_URL=https://… AGENT_API_KEY=…`
-4. Troque `AGENT_MODE=live` no `.env` do front e gere o build.
+O agente roda no mesmo projeto Supabase (Thoran), na função `analyze`. Ela vem do repositório **trade-agent** e é
+publicada de lá, não daqui:
 
-O `/agent-proxy` valida o usuário (JWT), aplica o limite diário do plano (`_shared/plans.ts`:
-free 3, pro 30, max 200 — valores provisórios), chama a API com a chave secreta, repassa o streaming,
-grava `analyses`, `agent_usage` e `agent_calls`, e completa o `disclaimer` se a API não mandar.
-Erros viram mensagens amigáveis no chat: `offline` (fora do ar, com "Tentar de novo"), `limit`
-(link para planos), `unauthorized`.
+```
+chat → /agent-proxy (este repo: login, créditos, histórico) → /analyze (trade-agent: resposta montada da base, com fonte em cada número)
+```
+
+1. Segredos das funções (uma vez, em Supabase › Edge Functions › Secrets, ou `supabase secrets set`):
+   - `AGENT_API_URL=https://<project-ref>.supabase.co/functions/v1`
+   - `AGENT_API_KEY=` a mesma chave que a `analyze` tem. Gere com `openssl rand -hex 32` e não cole em chat.
+2. `AGENT_MODE=live` no front.
+
+O que a `analyze` devolve (contrato em `src/services/agent/types.ts`): JSON com `explanation` (texto completo, em
+Markdown simples), `short` (versão curta de 3 linhas, a que o chat mostra) e `disclaimer`. Quando há casos parecidos no
+repertório, vem também o cartão: `precedents` (cada caso, com `unit` `%` ou `p.b.`), `stats` (sempre
+`direction: 'neutral'`), `chart` (só o passado: `current` vazio) e `source`. Não manda `relevance` nem `similarity`.
+
+O `/agent-proxy`:
+- confere o login e debita antes (1 crédito na pergunta rápida, 5 na análise); se o agente falhar, estorna;
+- análise sem caso parecido (recusa ou tema fora do repertório) não tem cartão: devolve os 5 e cobra 1;
+- grava `analyses` (a pergunta vai sem o trecho de voto e sem valor em dinheiro) e `agent_calls`; a `analyze` grava
+  `auditoria_agente`;
+- manda ao chat a versão curta e o cartão; a página da análise mostra o texto completo.
+
+O que o site pode e não pode dizer sobre mercado: `docs/auditoria-legal.md`.
 
 ## Planos e créditos
 
@@ -204,9 +224,13 @@ Valores ficam nas tabelas `plans` e `credit_config` (mudam sem deploy); `src/con
 ## Compliance (aplicado na interface)
 
 - Nada de "compre"/"venda": vocabulário "historicamente", "nos casos parecidos".
-- Todo card mostra amostra e período. Toda resposta termina com o aviso padrão (texto fixo no front se a API não enviar).
+- Toda resposta do agente real abre com o aviso (sou uma IA, posso errar, não é recomendação, a empresa não é
+  credenciada) e fecha com "Não digo se você deve comprar, quando entrar nem quanto colocar". Sem ele, o front usa
+  o mesmo texto.
+- Todo card mostra amostra, período e fonte. O gráfico mostra só os casos passados: nada de "hoje" nem projeção.
+- Estatística do agente real não tem direção (sem seta): menor e maior reação, mediana e taxa-base. A reação de cada
+  caso aparece com seta e sinal, nunca só cor.
 - Dados de exemplo e do `mockAgent` levam a marca "Exemplo ilustrativo, com dados fictícios".
-- Alta/baixa sempre com seta (▲ ▼ ■) e sinal, nunca só cor.
 
 ## Analytics
 

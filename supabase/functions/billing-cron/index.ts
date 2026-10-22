@@ -6,7 +6,9 @@ import { admin } from '../_shared/supabase.ts';
 import { json } from '../_shared/http.ts';
 
 Deno.serve(async (req) => {
-  if (req.headers.get('Authorization') !== `Bearer ${Deno.env.get('CRON_SECRET')}`) return json({ error: 'auth' }, 401);
+  // sem CRON_SECRET, `Bearer ${undefined}` viraria a senha "Bearer undefined"
+  const secret = Deno.env.get('CRON_SECRET');
+  if (!secret || req.headers.get('Authorization') !== `Bearer ${secret}`) return json({ error: 'auth' }, 401);
   const now = new Date().toISOString();
   const out = { annualGrants: 0, delinquent: 0, ended: 0 };
 

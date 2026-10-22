@@ -9,15 +9,10 @@
 
 -- ───────────── 1) Protótipo ─────────────
 drop trigger if exists ao_criar_usuario on auth.users;
-
 drop function if exists public.criar_perfil();
-
 drop function if exists public.aceitar_termos();
-
 drop function if exists public.minha_cota();
-
 drop function if exists public.reservar_pergunta(uuid);
-
 drop table if exists public.auditoria, public.perguntas, public.perfis, public.planos cascade;
 
 -- ───────────── 2) Auditoria do agente ─────────────
@@ -33,30 +28,19 @@ create table public.auditoria_agente (
   uso        jsonb,                            -- tokens da IA
   criada_em  timestamptz not null default now()
 );
-
 create index auditoria_agente_criada_idx on public.auditoria_agente (criada_em desc);
-
-alter table public.auditoria_agente enable row level security;
-
--- sem políticas: só a service role
+alter table public.auditoria_agente enable row level security;  -- sem políticas: só a service role
 
 -- ───────────── 3) Permissões ─────────────
 revoke all on all tables in schema public from anon, authenticated;
-
 revoke all on all sequences in schema public from anon, authenticated;
-
 grant all on all tables in schema public to service_role;
-
 grant usage, select on all sequences in schema public to service_role;
 
 grant select on public.plans, public.credit_config to anon, authenticated;
-
 grant select, insert, update on public.profiles to authenticated;
-
 grant select on public.analyses, public.subscriptions, public.credit_ledger, public.invoices to authenticated;
-
 grant select, insert, update on public.feedback to authenticated;
-
 grant select, insert, delete on public.alerts to authenticated;
 
 revoke execute on function
@@ -71,7 +55,6 @@ revoke execute on function
   public.handle_new_user(),
   public.protect_profile_fields()
 from public, anon, authenticated;
-
 grant execute on function
   public.cfg(text),
   public.credit_balance(uuid),
@@ -82,25 +65,19 @@ grant execute on function
   public.grant_monthly_credits(uuid, text),
   public.expire_canceled(uuid)
 to service_role;
-
-grant execute on function public.my_credits() to authenticated;
-
--- saldo da própria conta (usa auth.uid())
+grant execute on function public.my_credits() to authenticated;  -- saldo da própria conta (usa auth.uid())
 
 -- ───────────── 4) analyses ─────────────
 drop policy if exists "analyses: criar as próprias" on public.analyses;
-
 drop policy if exists "analyses: upsert as próprias" on public.analyses;
 
 -- ───────────── 5) Contas que já existiam ─────────────
 insert into public.profiles (id, name)
   select id, raw_user_meta_data->>'name' from auth.users
   on conflict (id) do nothing;
-
 insert into public.subscriptions (user_id, status)
   select id, 'trial' from auth.users
   on conflict (user_id) do nothing;
-
 insert into public.credit_ledger (user_id, amount, kind, bucket, reference)
   select id, public.cfg('trial_credits'), 'trial', 'recarga', 'signup' from auth.users
   on conflict do nothing;

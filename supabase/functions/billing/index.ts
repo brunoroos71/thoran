@@ -10,7 +10,8 @@ Deno.serve(async (req) => {
   const user = await userFromRequest(req);
   if (!user) return json({ error: 'auth' }, 401);
   const body = await req.json().catch(() => ({}));
-  const gw = await getGateway();
+  const gw = await getGateway().catch(() => null);
+  if (!gw) return json({ error: 'gateway_nao_configurado' }, 503); // BILLING_GATEWAY não definido: cobrança desligada
 
   const { data: sub } = await admin.from('subscriptions').select('*').eq('user_id', user.id).maybeSingle();
   const customer = { userId: user.id, email: user.email ?? '', gatewayCustomerId: sub?.gateway_customer_id, gatewaySubscriptionId: sub?.gateway_subscription_id };

@@ -10,6 +10,7 @@ import { PrecedentChart } from '@/components/ui/PrecedentChart';
 import { StatList } from '@/components/ui/StatList';
 import { Move } from '@/components/ui/Move';
 import { Disclaimer } from '@/components/ui/Disclaimer';
+import { RichText } from '@/components/ui/RichText';
 import { Feedback } from '@/components/app/Feedback';
 
 export default function Analysis() {
@@ -36,6 +37,9 @@ export default function Analysis() {
 
   const r = row.response;
   const mock = agentService.mode === 'mock';
+  const hasCases = r.precedents.count > 0;
+  const hasSimilarity = r.precedents.items.some((p) => typeof p.similarity === 'number');
+  const hasChart = Boolean(r.chart?.precedents.some((p) => p.length > 1));
   return (
     <article className="mx-auto max-w-5xl px-4 py-8 sm:px-8 md:py-12">
       <Link to="/app/historico" className="label inline-flex min-h-[44px] items-center gap-2 text-meta hover:text-texto">
@@ -43,75 +47,91 @@ export default function Analysis() {
       </Link>
       <header className="mt-6 flex flex-col gap-4 border-b border-linha pb-8">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="label text-raio">{a.event}</p>
-          <RelevanceBadge level={r.event.relevance} label={t.precedent.relevance[r.event.relevance]} />
+          {hasCases && <p className="label text-raio">{a.event}</p>}
+          {r.event.relevance && <RelevanceBadge level={r.event.relevance} label={t.precedent.relevance[r.event.relevance]} />}
         </div>
         <h1 className="text-display font-medium">{r.event.title}</h1>
         <p className="text-nevoa">“{row.question}”</p>
         <p className="font-mono text-sm text-nevoa">
-          {t.common.sample}: <span className="text-raio">{r.precedents.count}</span> {t.common.cases} · {t.common.period}: {fmtYear(r.precedents.period.from)}–
-          {fmtYear(r.precedents.period.to)} · {fmtDate(r.event.detected_at, locale)}
+          {hasCases && (
+            <>
+              {t.common.sample}: <span className="text-raio">{r.precedents.count}</span> {t.common.cases} · {t.common.period}: {fmtYear(r.precedents.period.from)}–
+              {fmtYear(r.precedents.period.to)} ·{' '}
+            </>
+          )}
+          {fmtDate(row.created_at, locale)}
         </p>
         {mock && <IllustrativeTag text={t.common.illustrative} />}
       </header>
 
-      <section className="mt-10" aria-labelledby="metrics">
-        <h2 id="metrics" className="label text-nevoa">
-          {a.metrics}
-        </h2>
-        <StatList stats={r.stats} size="lg" className="mt-4" />
-      </section>
+      {r.stats.length > 0 && (
+        <section className="mt-10" aria-labelledby="metrics">
+          <h2 id="metrics" className="label text-nevoa">
+            {a.metrics}
+          </h2>
+          <StatList stats={r.stats} size="lg" className="mt-4" />
+        </section>
+      )}
 
-      <section className="mt-10 rounded-card border border-linha bg-grafite p-6" aria-labelledby="chart">
-        <h2 id="chart" className="label text-nevoa">
-          {a.chart}
-        </h2>
-        <PrecedentChart className="mt-6" chart={r.chart} label={t.precedent.chartLabel} nowLabel={t.precedent.now} todayLabel={t.precedent.today} pastLabel={t.precedent.pastCases} height={300} />
-      </section>
+      {hasChart && r.chart && (
+        <section className="mt-10 rounded-card border border-linha bg-grafite p-6" aria-labelledby="chart">
+          <h2 id="chart" className="label text-nevoa">
+            {a.chart}
+          </h2>
+          <PrecedentChart className="mt-6" chart={r.chart} label={t.precedent.chartLabel} dayLabel={t.precedent.reactionDay} pastLabel={t.precedent.pastCases} height={300} />
+        </section>
+      )}
 
       <section className="mt-10" aria-labelledby="why">
         <h2 id="why" className="label text-nevoa">
           {a.why}
         </h2>
-        <p className="mt-4 max-w-3xl text-xl leading-relaxed">{r.explanation}</p>
+        <RichText text={r.explanation} className="mt-4 max-w-3xl" />
       </section>
 
-      <section className="mt-10" aria-labelledby="prec">
-        <h2 id="prec" className="label text-nevoa">
-          {a.precedents} ({r.precedents.count})
-        </h2>
-        <div className="mt-4 overflow-x-auto rounded-card border border-linha">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-grafite">
-              <tr>
-                {[a.date, a.title, a.asset, a.window, a.move, a.similarity].map((h) => (
-                  <th key={h} scope="col" className="label px-4 py-3 font-normal text-meta">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {r.precedents.items.map((p, i) => (
-                <tr key={i} className="border-t border-linha">
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-nevoa">{fmtDate(p.date, locale)}</td>
-                  <td className="px-4 py-3">{p.title}</td>
-                  <td className="px-4 py-3 font-mono">{p.asset}</td>
-                  <td className="px-4 py-3 font-mono text-nevoa">{p.window}</td>
-                  <td className="px-4 py-3">
-                    <Move value={p.move_pct} />
-                  </td>
-                  <td className="px-4 py-3 font-mono text-nevoa">{Math.round(p.similarity * 100)}%</td>
+      {hasCases && (
+        <section className="mt-10" aria-labelledby="prec">
+          <h2 id="prec" className="label text-nevoa">
+            {a.precedents} ({r.precedents.count})
+          </h2>
+          <div className="mt-4 overflow-x-auto rounded-card border border-linha">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="bg-grafite">
+                <tr>
+                  {[a.date, a.title, a.asset, a.window, a.move, ...(hasSimilarity ? [a.similarity] : [])].map((h) => (
+                    <th key={h} scope="col" className="label px-4 py-3 font-normal text-meta">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {r.precedents.items.map((p, i) => (
+                  <tr key={i} className="border-t border-linha">
+                    <td className="whitespace-nowrap px-4 py-3 font-mono text-nevoa">{fmtDate(p.date, locale)}</td>
+                    <td className="px-4 py-3">{p.title}</td>
+                    <td className="px-4 py-3 font-mono">{p.asset}</td>
+                    <td className="px-4 py-3 font-mono text-nevoa">{p.window}</td>
+                    <td className="px-4 py-3">
+                      <Move value={p.move_pct} unit={p.unit} />
+                    </td>
+                    {hasSimilarity && <td className="px-4 py-3 font-mono text-nevoa">{typeof p.similarity === 'number' ? `${Math.round(p.similarity * 100)}%` : '—'}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {r.source && (
+            <p className="mt-3 text-xs leading-relaxed text-meta">
+              {t.common.source}: {r.source}
+            </p>
+          )}
+        </section>
+      )}
 
       <div className="mt-10 flex flex-col gap-6">
         <Feedback analysisId={r.id} />
-        <Disclaimer text={r.disclaimer} />
+        {!r.explanation.includes('não é recomendação de investimento') && <Disclaimer text={r.disclaimer} />}
       </div>
     </article>
   );
