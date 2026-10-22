@@ -16,8 +16,10 @@ ENV=.env.production.local
 set -a; source "$ENV"; set +a
 put() { printf '%s' "$2" | node scripts/env-set.mjs "$1"; export "$1=$2"; }
 
-echo "▸ Supabase: conferindo login"
-$SB projects list >/dev/null 2>&1 || { echo "Faça login primeiro:  npx supabase login"; exit 1; }
+# token do Supabase colado no arquivo dispensa o `npx supabase login`
+[ -n "${SUPABASE_ACCESS_TOKEN:-}" ] && export SUPABASE_ACCESS_TOKEN
+echo "▸ Supabase: conferindo acesso"
+$SB projects list >/dev/null 2>&1 || { echo "Sem acesso ao Supabase. Cole o SUPABASE_ACCESS_TOKEN (sbp_…) em $ENV ou rode: npx supabase login"; exit 1; }
 
 if [ -z "${SUPABASE_PROJECT_REF:-}" ]; then
   echo "▸ Supabase: criando o projeto 'thoran' em São Paulo"
@@ -47,7 +49,10 @@ case "${STRIPE_SECRET_KEY:-}" in
   sk_live_*) echo "  ⚠ modo PRODUÇÃO: cobranças reais";;
   *) echo "Cole a STRIPE_SECRET_KEY (sk_test_…) em $ENV e rode de novo."; exit 1;;
 esac
-SITE_URL="${SITE_URL:-https://thoran-rho.vercel.app}"; put SITE_URL "$SITE_URL"
+# enquanto o domínio próprio não responde, usa o endereço da Vercel (senão os links de login quebram)
+SITE_URL="${SITE_URL:-https://thoran-rho.vercel.app}"
+curl -sf -o /dev/null --max-time 8 "$SITE_URL" || { echo "  $SITE_URL ainda não está no ar; usando https://thoran-rho.vercel.app"; SITE_URL=https://thoran-rho.vercel.app; }
+put SITE_URL "$SITE_URL"
 
 echo "▸ Banco, autenticação e funções"
 export SUPABASE_DB_PASSWORD
