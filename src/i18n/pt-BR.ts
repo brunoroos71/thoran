@@ -345,7 +345,7 @@ const ptBR = {
       },
       {
         q: 'Quanto vai custar?',
-        a: 'O Basic custa R$ 29,90 por mês e traz 80 créditos. O Pro custa R$ 49,90 por mês e traz 150 créditos. No plano anual você paga o equivalente a 10 meses: R$ 299 no Basic e R$ 499 no Pro. Todo cadastro começa com 15 créditos grátis, sem cartão.',
+        a: 'O Basic custa R$ 57,90 por mês e traz 80 créditos. O Pro custa R$ 97,90 por mês e traz 150 créditos. No plano anual você paga o equivalente a 10 meses: R$ 579 no Basic e R$ 979 no Pro. Todo cadastro começa com 15 créditos grátis, sem cartão.',
       },
       {
         q: 'Posso cancelar?',

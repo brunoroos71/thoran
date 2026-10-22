@@ -14,8 +14,8 @@ if (!KEY) {
 }
 
 const SEED = [
-  { id: 'basic', name: 'Basic', monthly_cents: 2990, annual_cents: 29900, credits_per_month: 80 },
-  { id: 'pro', name: 'Pro', monthly_cents: 4990, annual_cents: 49900, credits_per_month: 150 },
+  { id: 'basic', name: 'Basic', monthly_cents: 5790, annual_cents: 57900, credits_per_month: 80 },
+  { id: 'pro', name: 'Pro', monthly_cents: 9790, annual_cents: 97900, credits_per_month: 150 },
 ];
 
 async function plans() {

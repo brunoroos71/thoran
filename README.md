@@ -167,8 +167,8 @@ O que o site pode e não pode dizer sobre mercado: `docs/auditoria-legal.md`.
 
 | Plano | Mensal | Anual | Créditos/mês |
 |---|---|---|---|
-| Basic | R$ 29,90 | R$ 299 | 80 |
-| Pro | R$ 49,90 | R$ 499 | 150 (acumula até 300) |
+| Basic | R$ 57,90 | R$ 579 | 80 |
+| Pro | R$ 97,90 | R$ 979 | 150 (acumula até 300) |
 
 Recarga: 50 créditos por R$ 19,90 · teste grátis: 15 créditos · pergunta rápida = 1 · análise completa = 5.
 Valores ficam nas tabelas `plans` e `credit_config` (mudam sem deploy); `src/config/pricing.ts` é só o espelho para a landing.

@@ -16,8 +16,8 @@ export interface PlanConfig {
 }
 
 export const PLANS: Record<PlanId, PlanConfig> = {
-  basic: { id: 'basic', name: 'Basic', monthlyCents: 2990, annualCents: 29900, creditsPerMonth: 80, rollover: false },
-  pro: { id: 'pro', name: 'Pro', monthlyCents: 4990, annualCents: 49900, creditsPerMonth: 150, rollover: true },
+  basic: { id: 'basic', name: 'Basic', monthlyCents: 5790, annualCents: 57900, creditsPerMonth: 80, rollover: false },
+  pro: { id: 'pro', name: 'Pro', monthlyCents: 9790, annualCents: 97900, creditsPerMonth: 150, rollover: true },
 };
 
 export const CREDIT_COST = { pergunta: 1, analise: 5 } as const;
@@ -32,5 +32,5 @@ export function money(cents: number, locale = 'pt-BR') {
   return new Intl.NumberFormat(locale, { style: 'currency', currency: CURRENCY[locale] ?? 'BRL' }).format(cents / 100);
 }
 
-/** Valor mensal equivalente do plano anual, arredondado ao centavo (299/12 = 24,92). */
+/** Valor mensal equivalente do plano anual, arredondado ao centavo (579/12 = 48,25). */
 export const annualMonthlyCents = (p: PlanConfig) => Math.round(p.annualCents / 12);

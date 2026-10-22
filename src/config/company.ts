@@ -27,7 +27,7 @@ export const COMPANY = {
 };
 
 /** Versão dos documentos legais. Mude ao alterar qualquer texto: novos aceites passam a registrar a versão nova. */
-export const LEGAL_VERSION = '1.0';
+export const LEGAL_VERSION = '1.1'; // 1.1: novos preços dos planos
 export const LEGAL_UPDATED = '2026-10-22';
 
 /** Nome de quem oferece o Thoran: razão social (pj) ou os responsáveis (pf), ex.: "Bruno Roos e João Freitas". */
