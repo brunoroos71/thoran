@@ -7,7 +7,8 @@ import { applyEvent } from '../_shared/billing/handlers.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
-  const gw = await getGateway();
+  const gw = await getGateway().catch(() => null);
+  if (!gw) return json({ error: 'gateway_nao_configurado' }, 503); // BILLING_GATEWAY não definido: cobrança desligada
   // id e tipo do evento original, para registro (o corpo só pode ser lido uma vez)
   const raw = req.clone();
   let events;

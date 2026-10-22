@@ -76,8 +76,10 @@ export const mockGateway: Gateway = {
   },
 };
 
+/** Sem BILLING_GATEWAY não há cobrança: o simulado só entra quando alguém pede `mock`, porque ele aprova tudo de graça. */
 export async function getGateway(): Promise<Gateway> {
-  const name = Deno.env.get('BILLING_GATEWAY') ?? 'mock';
+  const name = Deno.env.get('BILLING_GATEWAY');
   if (name === 'stripe') return (await import('./stripe.ts')).stripeGateway;
-  return mockGateway;
+  if (name === 'mock') return mockGateway;
+  throw new GatewayError('gateway_nao_configurado');
 }

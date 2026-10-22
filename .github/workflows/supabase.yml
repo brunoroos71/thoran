@@ -1,0 +1,54 @@
+# Publica o que mora no Supabase (banco e Edge Functions) quando um merge chega na main.
+# O site em si a Vercel publica sozinha; isto cuida só do backend, no projeto Thoran.
+#
+# Uma vez só, em Settings › Secrets and variables › Actions › New repository secret:
+#   SUPABASE_ACCESS_TOKEN  token de alguém da organização Trade no Supabase
+#                          (supabase.com/dashboard/account/tokens › Generate new token)
+#   SUPABASE_DB_PASSWORD   opcional: a senha do banco do Thoran. Sem ela, a CLI entra com um papel temporário.
+# Os segredos das funções (AGENT_API_KEY, AGENT_API_URL, Stripe, Resend...) ficam no próprio Supabase e não passam
+# por aqui.
+name: Supabase
+
+on:
+  push:
+    branches: [main]
+    paths: ['supabase/**', '.github/workflows/supabase.yml']
+  workflow_dispatch:
+
+# Duas publicações nunca rodam juntas; a segunda espera a primeira terminar.
+concurrency:
+  group: supabase-thoran
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: ainbuvumkglumwodvdok
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
+
+      - name: Liga ao projeto Thoran
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      # Só roda as migrações que o banco ainda não tem (supabase_migrations.schema_migrations).
+      # Migração já aplicada não roda de novo: para mudar o banco, crie um arquivo novo, não edite um antigo.
+      - name: Banco
+        run: supabase db push --linked --yes
+
+      # market-data fica de fora: busca cotação do Yahoo e da Binance sem licença, e a auditoria legal pediu para
+      # desligar até haver fornecedor licenciado (docs/auditoria-legal.md, item 10).
+      - name: Edge Functions
+        run: >
+          supabase functions deploy waitlist-join admin-waitlist agent-proxy billing billing-webhook billing-cron
+          --project-ref "$PROJECT_REF" --use-api

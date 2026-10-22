@@ -25,7 +25,7 @@ export function PrecedentCard({ data, illustrative, href, compact, className, sh
       <header className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="label text-meta">{p.eventLabel}</p>
-          <RelevanceBadge level={data.event.relevance} label={p.relevance[data.event.relevance]} />
+          {data.event.relevance && <RelevanceBadge level={data.event.relevance} label={p.relevance[data.event.relevance]} />}
         </div>
         <h3 className="text-xl font-medium leading-tight tracking-tight text-texto sm:text-2xl">{data.event.title}</h3>
         <p className="font-mono text-xs text-nevoa">
@@ -34,7 +34,12 @@ export function PrecedentCard({ data, illustrative, href, compact, className, sh
         </p>
       </header>
       <StatList stats={compact ? data.stats.slice(0, 2) : data.stats} />
-      <PrecedentChart chart={data.chart} label={p.chartLabel} nowLabel={p.now} todayLabel={p.today} pastLabel={p.pastCases} height={compact ? 180 : 220} />
+      {data.chart && <PrecedentChart chart={data.chart} label={p.chartLabel} dayLabel={p.reactionDay} pastLabel={p.pastCases} height={compact ? 180 : 220} />}
+      {data.source && (
+        <p className="text-xs leading-relaxed text-meta">
+          {t.common.source}: {data.source}
+        </p>
+      )}
       {illustrative && <IllustrativeTag text={t.common.illustrative} />}
       {href && (
         <Link to={href} className="label group inline-flex min-h-[44px] items-center gap-2 self-start text-raio hover:text-texto">

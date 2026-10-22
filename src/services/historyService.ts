@@ -12,19 +12,14 @@ export interface StoredAnalysis {
 const LS = 'thoran.demo.analyses';
 
 /**
- * No modo live o /agent-proxy já grava em `analyses`. No modo mock, o front grava
- * (Supabase com RLS quando há sessão; localStorage na demonstração).
+ * Guarda a resposta no navegador, para a lista de recentes da barra lateral (e para o histórico da demonstração).
+ * No banco, quem grava é o /agent-proxy: o front só lê `analyses` (RLS: as próprias).
  */
-export async function saveAnalysis(question: string, response: AnalysisResponse, persistRemote: boolean) {
+export function saveAnalysis(question: string, response: AnalysisResponse) {
   const row: StoredAnalysis = { id: response.id, question, response, created_at: new Date().toISOString() };
   const local = readLS<StoredAnalysis[]>(LS, []);
   writeLS(LS, [row, ...local.filter((r) => r.id !== row.id)].slice(0, 100));
   window.dispatchEvent(new Event('thoran:history')); // atualiza a lista de recentes na barra lateral
-  if (persistRemote && supabase) {
-    const { data } = await supabase.auth.getUser();
-    if (data.user)
-      await supabase.from('analyses').upsert({ id: row.id, user_id: data.user.id, question, response });
-  }
 }
 
 export async function listAnalyses(): Promise<StoredAnalysis[]> {

@@ -1,6 +1,8 @@
 /**
  * CONTRATO COM A API DO AGENTE (POST /analyze).
  * Não altere sem combinar com quem constrói a API real. Ver README › "Contrato do agente".
+ * O agente real (função analyze, repositório trade-agent) não manda relevância nem semelhança, e o gráfico dele é só
+ * do passado; por isso esses campos são opcionais.
  */
 export type Market = 'b3' | 'crypto' | 'global';
 export type Relevance = 'baixa' | 'media' | 'atencao';
@@ -15,10 +17,11 @@ export interface AnalyzeRequest {
 export interface PrecedentItem {
   date: string; // ISO 8601
   title: string;
-  similarity: number; // 0..1
+  similarity?: number; // 0..1 (o agente real não mede semelhança)
   asset: string;
-  move_pct: number;
-  window: string; // "1h", "1d"...
+  move_pct: number; // na unidade de `unit`
+  unit?: string; // '%' (padrão) ou 'p.b.' (juros, em pontos-base)
+  window: string; // "1h", "pregão da reação"...
 }
 
 export interface AnalysisStat {
@@ -29,20 +32,23 @@ export interface AnalysisStat {
 
 export interface AnalysisResponse {
   id: string;
-  event: { title: string; detected_at: string; relevance: Relevance };
+  event: { title: string; detected_at: string; relevance?: Relevance };
   precedents: {
     count: number;
     period: { from: string; to: string };
     items: PrecedentItem[];
   };
   stats: AnalysisStat[];
-  chart: {
+  /** Só o passado: o caminho de cada caso, com o evento em now_index. `current` fica vazio no agente real. */
+  chart?: {
     unit: string;
     now_index: number;
     current: number[];
     precedents: number[][];
   };
-  explanation: string;
+  explanation: string; // Markdown simples: **título**, listas, links
+  short?: string; // a versão curta (3 linhas), a que o chat mostra
+  source?: string; // de onde vêm os números do cartão
   disclaimer?: string; // o front exibe o aviso padrão se vier vazio
 }
 

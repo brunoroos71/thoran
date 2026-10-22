@@ -8,7 +8,7 @@ const enUS: DeepPartial<Dict> = {
   common: {
     illustrative: 'Illustrative example, with fictitious data',
     disclaimer:
-      'Thoran does not provide investment advice. Past results do not guarantee future results. Trading involves risk of loss.',
+      'I am an AI and I can be wrong. This is not investment advice: the company is not a CVM-accredited analyst or authorized adviser. Past returns do not indicate future returns. I do not say whether you should buy, when to enter or how much to put in.',
   },
   hero: { title1: 'See the lightning', title2: 'before the thunder.' },
 };

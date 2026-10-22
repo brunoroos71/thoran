@@ -9,6 +9,8 @@ import { useCredits } from '@/services/billing/CreditsProvider';
 import { saveAnalysis } from '@/services/historyService';
 import { PrecedentCard } from '@/components/ui/PrecedentCard';
 import { Disclaimer } from '@/components/ui/Disclaimer';
+import { RichText } from '@/components/ui/RichText';
+import { IllustrativeTag } from '@/components/ui/Badge';
 import { Symbol } from '@/components/ui/Logo';
 import { Feedback } from '@/components/app/Feedback';
 import { Composer, Greeting, Suggestions } from '@/components/chat/Composer';
@@ -27,6 +29,8 @@ interface Msg {
 }
 
 const uid = () => Math.random().toString(36).slice(2);
+// O agente real já abre a resposta com o aviso (D2/D3) e fecha com o fecho; aí o rodapé repetiria o mesmo texto.
+const hasNotice = (text: string) => text.includes('não é recomendação de investimento');
 
 export default function Chat() {
   const { t, locale } = useI18n();
@@ -71,7 +75,7 @@ export default function Chat() {
           if (chunk.type === 'text') patch(agentId, (m) => ({ ...m, text: m.text + chunk.delta }));
           else if (chunk.type === 'analysis') {
             patch(agentId, (m) => ({ ...m, analyses: [...m.analyses, chunk.data] }));
-            saveAnalysis(query, chunk.data, mock).catch(() => undefined);
+            saveAnalysis(query, chunk.data);
           }
         }
       });
@@ -205,16 +209,18 @@ export default function Chat() {
                     </p>
                   )}
                   {m.text && (
-                    <p className="leading-relaxed text-texto">
-                      {m.text}
+                    <RichText text={m.text}>
                       {m.status === 'streaming' && <span aria-hidden className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-raio" />}
-                    </p>
+                    </RichText>
                   )}
-                  {m.analyses.map((a) => (
-                    <div key={a.id} className="animate-rise">
-                      <PrecedentCard data={a} illustrative={mock} href={`/app/analise/${a.id}`} showDisclaimer={false} className="rounded-3xl" />
-                    </div>
-                  ))}
+                  {mock && m.text && m.status === 'done' && <IllustrativeTag text={t.common.illustrative} />}
+                  {m.analyses
+                    .filter((a) => a.precedents.count > 0)
+                    .map((a) => (
+                      <div key={a.id} className="animate-rise">
+                        <PrecedentCard data={a} illustrative={mock} href={`/app/analise/${a.id}`} showDisclaimer={false} className="rounded-3xl" />
+                      </div>
+                    ))}
                   {m.status === 'error' && (
                     <div role="alert" className="flex flex-col items-start gap-4 rounded-3xl border border-baixa/50 bg-grafite p-5">
                       <p className="flex gap-2">
@@ -233,7 +239,7 @@ export default function Chat() {
                     </div>
                   )}
                   {m.status === 'done' && m.analyses[0] && <Feedback analysisId={m.analyses[0].id} />}
-                  {m.status !== 'streaming' && <Disclaimer text={m.analyses[0]?.disclaimer} className="border-0 pt-0" />}
+                  {m.status !== 'streaming' && !hasNotice(m.text) && <Disclaimer text={m.analyses[0]?.disclaimer} className="border-0 pt-0" />}
                 </div>
               </li>
             ),

@@ -23,7 +23,8 @@ npx -y supabase@latest secrets set \
   ${AGENT_API_URL:+AGENT_API_URL="$AGENT_API_URL"} ${AGENT_API_KEY:+AGENT_API_KEY="$AGENT_API_KEY"}
 
 echo "▸ 3/5 Edge Functions"
-npx -y supabase@latest functions deploy waitlist-join admin-waitlist agent-proxy market-data billing billing-webhook billing-cron
+# market-data fica de fora até haver fornecedor de cotação licenciado (docs/auditoria-legal.md, item 10)
+npx -y supabase@latest functions deploy waitlist-join admin-waitlist agent-proxy billing billing-webhook billing-cron
 
 echo "▸ 4/5 Produtos e preços no Stripe"
 STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" SUPABASE_URL="$SUPABASE_URL" SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" node scripts/stripe-setup.mjs
