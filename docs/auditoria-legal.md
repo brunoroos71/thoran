@@ -7,8 +7,8 @@ Arquivos e linhas são os de antes deste PR. Os códigos entre colchetes são os
 ## Resumo
 
 - **Resolvidos neste PR:** 5 itens (gráfico, aviso, recusa, alerta de risco do agente, etiqueta do mock).
-- **Em parte:** 5 (inclui os textos jurídicos que o Bruno escreveu em 22/10).
-- **Pendentes:** 24. A maioria é texto do site e decisão de produto ou de posicionamento (Alertas, slogan, planos, onboarding, landing), que fica com quem decide o produto.
+- **Em parte:** 6 (inclui os textos jurídicos que o Bruno escreveu em 22/10 e o FAQ do item 31, corrigido junto com o aviso da APIMEC).
+- **Pendentes:** 23. A maioria é texto do site e decisão de produto ou de posicionamento (Alertas, slogan, planos, onboarding, landing), que fica com quem decide o produto.
 - **Antes de abrir para o público:** os itens de gravidade alta que seguem pendentes, os textos jurídicos (item 13) revisados por advogado e `BILLING_MODE=live` só depois disso.
 
 ## Gravidade alta
@@ -49,9 +49,9 @@ Arquivos e linhas são os de antes deste PR. Os códigos entre colchetes são os
 
 **Hoje:** disclaimer: 'O Thoran não faz recomendação de investimento. Resultados passados não garantem resultados futuros. Operar no mercado envolve risco de perda.' (13-14; repetido em mockAgent.ts:9-10, agent-proxy/index.ts:11-12, home.footer pt-BR.ts:140; exibido por Disclaimer.tsx:10 e Chat.tsx:236)
 
-**O que fazer:** Usar em todos os lugares o AVISO do trade-agent (trade-agent/supabase/functions/perguntar/agente/texto.ts:4): 'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura.' Pôr no topo de cada resposta do chat, não só no rodapé, e manter o rodapé.
+**O que fazer:** Usar em todos os lugares o AVISO do trade-agent (trade-agent/agente/textos.py): 'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada na APIMEC nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura.' Pôr no topo de cada resposta do chat, não só no rodapé, e manter o rodapé.
 
-**Situação:** **Resolvido neste PR.** O aviso padrão do site e o do proxy são o AVISO + FECHO do agente; o agente real já abre toda resposta com ele.
+**Situação:** **Resolvido.** O aviso padrão do site e o do proxy são o AVISO + FECHO do agente; o agente real já abre toda resposta com ele. Em 22/10 o aviso passou a dizer quem credencia (APIMEC para analista, CVM para consultor), e dois lugares que tinham ficado com o texto antigo foram trocados: o rodapé das páginas públicas (`home.footer`, via SiteLayout; login, cadastro e a área /app não têm rodapé) e o cartão de exemplo da página Como funciona (/sobre), que usava o aviso do mock. Fora do site, o e-mail de saldo baixo (`supabase/functions/_shared/credits.ts:21`) ainda usa a frase antiga; o e-mail da lista de espera (`emailTemplate.ts`) segue no item 28, e o resumo do Aviso de risco (`src/content/legal/risk.ts:6`) no item 13.
 
 ### 6. [M9] `src/i18n/pt-BR.ts:294`
 
@@ -263,7 +263,7 @@ Arquivos e linhas são os de antes deste PR. Os códigos entre colchetes são os
 
 **O que fazer:** FAQ: 'Não. Recomendação e análise de valores mobiliários exigem analista credenciado na APIMEC (Res. CVM 20); orientação individual exige consultor autorizado pela CVM (Res. CVM 19). O Thoran não é nenhum dos dois: é uma IA que mostra o que aconteceu em casos parecidos, e pode errar.' Exibir no Footer o texto legal corrigido.
 
-**Situação:** Pendente.
+**Situação:** **Resolvido em parte (22/10).** O FAQ diz quem credencia o analista (APIMEC, Res. CVM 20) e quem autoriza o consultor (CVM, Res. CVM 19), e o `footer.legal` cita as duas resoluções. O Aviso de risco (`risk.ts`, seção 5) também passou a dizer que o analista é credenciado na APIMEC e que a lista dos analistas fica no site dela, não no da CVM. O `footer.legal` continua fora da tela: o rodapé mostra o `home.footer`, que agora é o aviso completo.
 
 ### 32. [N7, M7, CDC art. 37] `src/i18n/pt-BR.ts:10`
 

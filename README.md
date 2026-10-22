@@ -225,8 +225,9 @@ Valores ficam nas tabelas `plans` e `credit_config` (mudam sem deploy); `src/con
 
 - Nada de "compre"/"venda": vocabulário "historicamente", "nos casos parecidos".
 - Toda resposta do agente real abre com o aviso (sou uma IA, posso errar, não é recomendação, a empresa não é
-  credenciada) e fecha com "Não digo se você deve comprar, quando entrar nem quanto colocar". Sem ele, o front usa
-  o mesmo texto.
+  analista credenciada na APIMEC nem consultora autorizada pela CVM). O campo `disclaimer` traz o aviso e o fecho
+  ("Não digo se você deve comprar, quando entrar nem quanto colocar"); sem ele, o front usa o mesmo texto
+  (`common.disclaimer`), e o rodapé das páginas públicas repete o aviso.
 - Todo card mostra amostra, período e fonte. O gráfico mostra só os casos passados: nada de "hoje" nem projeção.
 - Estatística do agente real não tem direção (sem seta): menor e maior reação, mediana e taxa-base. A reação de cada
   caso aparece com seta e sinal, nunca só cor.

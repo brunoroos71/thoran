@@ -8,7 +8,7 @@ const enUS: DeepPartial<Dict> = {
   common: {
     illustrative: 'Illustrative example, with fictitious data',
     disclaimer:
-      'I am an AI and I can be wrong. This is not investment advice: the company is not a CVM-accredited analyst or authorized adviser. Past returns do not indicate future returns. I do not say whether you should buy, when to enter or how much to put in.',
+      'I am an AI and I can be wrong. This is not investment advice: the company is not an analyst accredited by APIMEC nor an adviser authorized by the CVM (the Brazilian securities regulator). Past returns do not indicate future returns. I do not say whether you should buy, when to enter or how much to put in.',
   },
   hero: { title1: 'See the lightning', title2: 'before the thunder.' },
 };
