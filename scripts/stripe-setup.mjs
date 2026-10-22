@@ -102,7 +102,8 @@ if (ref) {
   } else {
     const wh = await stripe('POST', 'webhook_endpoints', { url, enabled_events: events, description: 'Thoran · billing-webhook (Supabase)', api_version: '2024-06-20' });
     const { execFileSync } = await import('node:child_process');
-    execFileSync('node', [new URL('./env-set.mjs', import.meta.url).pathname, 'STRIPE_WEBHOOK_SECRET'], { input: wh.secret, stdio: ['pipe', 'inherit', 'inherit'] });
+    const { fileURLToPath } = await import('node:url');
+    execFileSync('node', [fileURLToPath(new URL('./env-set.mjs', import.meta.url)), 'STRIPE_WEBHOOK_SECRET'], { input: wh.secret, stdio: ['pipe', 'inherit', 'inherit'] });
     console.log(`+ webhook: ${wh.id} → ${url}`);
   }
 }

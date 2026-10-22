@@ -23,8 +23,13 @@ $SB projects list >/dev/null 2>&1 || { echo "Sem acesso ao Supabase. Cole o SUPA
 
 if [ -z "${SUPABASE_PROJECT_REF:-}" ]; then
   echo "▸ Supabase: criando o projeto 'thoran' em São Paulo"
-  ORG=$($SB orgs list -o json | node -e 'const o=JSON.parse(require("fs").readFileSync(0));const a=Array.isArray(o)?o:o.orgs||[];console.log(a[0]?.id||"")')
-  [ -n "$ORG" ] || { echo "Nenhuma organização no Supabase. Crie uma no painel e rode de novo."; exit 1; }
+  ORG=$($SB orgs list -o json | node -e 'const o=JSON.parse(require("fs").readFileSync(0));const a=Array.isArray(o)?o:o.orgs||o.organizations||[];console.log(a[0]?.id||"")')
+  if [ -z "$ORG" ]; then
+    echo "  conta sem organização: criando 'Thoran' (plano gratuito)"
+    $SB orgs create Thoran >/dev/null
+    ORG=$($SB orgs list -o json | node -e 'const o=JSON.parse(require("fs").readFileSync(0));const a=Array.isArray(o)?o:o.orgs||o.organizations||[];console.log(a[0]?.id||"")')
+  fi
+  [ -n "$ORG" ] || { echo "Não consegui criar a organização no Supabase. Crie uma no painel e rode de novo."; exit 1; }
   DBPASS=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 28)
   put SUPABASE_DB_PASSWORD "$DBPASS"
   REF=$($SB projects create thoran --org-id "$ORG" --db-password "$DBPASS" --region sa-east-1 -o json | node -e 'const o=JSON.parse(require("fs").readFileSync(0));console.log(o.id||o.ref||"")')
