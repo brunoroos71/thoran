@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 /**
  * Fundo vivo e discreto (referência: deepseek.com), nas cores da marca:
  *  1. shader WebGL: luz azul fraca se movendo devagar no topo
- *  2. gráfico de velas quase transparente deslizando na metade de baixo
+ *  2. gráfico de velas (verde/vermelho) quase transparente deslizando na metade de baixo
  * Começa depois do carregamento (não atrasa o LCP), pausa com a aba oculta
  * e fica estático com prefers-reduced-motion.
  */
@@ -158,9 +158,11 @@ function startCandles(cv: HTMLCanvasElement, animate: boolean) {
       const edge = Math.min(1, x / (w * 0.15), (w - x) / (w * 0.15));
       if (edge <= 0) continue;
       const up = c.c >= c.o;
-      const a = 0.07 * edge;
-      ctx.strokeStyle = up ? `rgba(125,216,255,${a})` : `rgba(200,207,215,${a})`;
-      ctx.fillStyle = `rgba(200,207,215,${a})`;
+      // cores reais de gráfico (alta verde #4ADE80, baixa vermelha #F7716E), bem apagadas
+      const a = 0.09 * edge;
+      const rgb = up ? '74,222,128' : '247,113,110';
+      ctx.strokeStyle = `rgba(${rgb},${a})`;
+      ctx.fillStyle = `rgba(${rgb},${a})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, y(c.hi));

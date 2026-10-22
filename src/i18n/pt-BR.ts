@@ -131,6 +131,15 @@ const ptBR = {
     greeting: 'O que aconteceu no mercado hoje?',
     sub: 'Cole uma notícia. O Thoran mostra como o mercado reagiu nos casos parecidos dos últimos 10 anos.',
     placeholder: 'Pergunte ao Thoran',
+    typing: [
+      'Devo comprar dólar hoje?',
+      'Como as eleições estão afetando o mercado?',
+      'O Copom subiu os juros. E o mini-índice?',
+      'O que costuma acontecer com o bitcoin depois do halving?',
+      'Payroll forte nos EUA mexe com a bolsa?',
+      'IPCA veio acima do esperado. E o dólar?',
+      'Petrobras anunciou dividendos. Como a ação reagiu antes?',
+    ],
     suggestions: [
       'O Copom subiu os juros. O que costuma acontecer com o mini-índice?',
       'Payroll veio forte. Como o dólar reagiu em casos parecidos?',

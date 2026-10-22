@@ -13,6 +13,7 @@ import { Symbol } from '@/components/ui/Logo';
 import { Feedback } from '@/components/app/Feedback';
 import { Composer, Greeting, Suggestions } from '@/components/chat/Composer';
 import { PENDING_KEY } from '@/components/chat/AuthGate';
+import { useTypewriter } from '@/hooks/useTypewriter';
 
 interface Msg {
   id: string;
@@ -43,6 +44,7 @@ export default function Chat() {
   const busy = msgs.some((m) => m.status === 'streaming');
   const mock = agentService.mode === 'mock';
 
+  const typed = useTypewriter(t.home.typing, { paused: msgs.length > 0 || input.length > 0 });
   const [params] = useSearchParams();
   const nova = params.get('nova');
 
@@ -160,7 +162,7 @@ export default function Chat() {
       value={input}
       onChange={setInput}
       onSubmit={() => send(input)}
-      placeholder={t.home.placeholder}
+      placeholder={msgs.length === 0 ? typed : t.home.placeholder}
       label={c.send}
       busy={busy}
       onStop={() => abort.current?.abort()}
