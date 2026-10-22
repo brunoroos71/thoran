@@ -2,7 +2,7 @@ import { Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTitle } from '@/hooks/useTitle';
 import { SiteLayout } from '@/components/layout/SiteLayout';
-import { COMPANY, LEGAL_UPDATED, LEGAL_VERSION, MISSING_COMPANY_FIELDS } from '@/config/company';
+import { COMPANY, LEGAL_UPDATED, LEGAL_VERSION, MISSING_COMPANY_FIELDS, PROVIDER_NAME } from '@/config/company';
 import { terms } from '@/content/legal/terms';
 import { privacy } from '@/content/legal/privacy';
 import { risk } from '@/content/legal/risk';
@@ -18,8 +18,8 @@ const LINKS: [Kind, string, string][] = [
 
 const pj = COMPANY.type === 'pj';
 const FIELDS: Record<string, { value: string; label: string }> = {
-  empresa: { value: COMPANY.legalName, label: pj ? 'razão social' : 'nome completo do responsável' },
-  documento: { value: COMPANY.document, label: pj ? 'CNPJ' : 'CPF' },
+  empresa: { value: PROVIDER_NAME, label: pj ? 'razão social' : 'nome completo do responsável' },
+  documento: { value: COMPANY.document, label: 'CNPJ' },
   endereco: { value: COMPANY.address, label: 'endereço' },
   contato: { value: COMPANY.contactEmail, label: 'e-mail de contato' },
   privacidade: { value: COMPANY.privacyEmail, label: 'e-mail de privacidade' },
@@ -29,7 +29,12 @@ const FIELDS: Record<string, { value: string; label: string }> = {
 
 /** Frases que mudam se o Thoran é oferecido por empresa (CNPJ) ou por pessoa física (CPF), e se há encarregado. */
 const COMPOSED: Record<string, string> = {
-  identificacao: pj ? '{{empresa}}, inscrita no CNPJ sob o nº {{documento}}' : '{{empresa}}, pessoa física inscrita no CPF sob o nº {{documento}}',
+  identificacao: pj
+    ? '{{empresa}}, inscrita no CNPJ sob o nº {{documento}}'
+    : COMPANY.people.length
+      ? COMPANY.people.map((p) => `${p.name} (CPF ${p.document})`).join(COMPANY.people.length > 2 ? ', ' : ' e ').replace(/, ([^,]*)$/, ' e $1') +
+        (COMPANY.people.length > 1 ? ', pessoas físicas responsáveis pelo Thoran' : ', pessoa física responsável pelo Thoran')
+      : '{{empresa}}, pessoa física responsável pelo Thoran',
   encarregado: COMPANY.dpoName
     ? 'Encarregado pelo tratamento de dados pessoais (DPO): {{dpo}}, contato {{privacidade}}.'
     : 'Canal de atendimento ao titular de dados pessoais: {{privacidade}}. Por se enquadrar como agente de tratamento de pequeno porte, o Thoran não indicou encarregado, conforme a Resolução CD/ANPD nº 2/2022, e responde pelo canal acima.',
