@@ -13,8 +13,8 @@ export const privacy: LegalDoc = {
       id: 'controlador',
       title: '1. Quem é responsável pelos seus dados',
       blocks: [
-        'Esta Política explica como {{empresa}}, CNPJ {{cnpj}}, com sede em {{endereco}} (“Thoran”, “nós”), trata dados pessoais de quem usa o site {{site}} e a Plataforma Thoran, nos termos da Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, “LGPD”) e do Marco Civil da Internet (Lei nº 12.965/2014).',
-        'O Thoran é o controlador dos dados pessoais descritos aqui. Encarregado pelo tratamento de dados pessoais (DPO): {{dpo}}, contato {{privacidade}}.',
+        'Esta Política explica como {{identificacao}}, com endereço em {{endereco}} (“Thoran”, “nós”), trata dados pessoais de quem usa o site {{site}} e a Plataforma Thoran, nos termos da Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, “LGPD”) e do Marco Civil da Internet (Lei nº 12.965/2014).',
+        'O Thoran é o controlador dos dados pessoais descritos aqui. {{encarregado}}',
       ],
     },
     {
@@ -175,7 +175,7 @@ export const privacy: LegalDoc = {
     {
       id: 'contato',
       title: '13. Contato',
-      blocks: ['Encarregado (DPO): {{dpo}} — {{privacidade}}. Demais assuntos: {{contato}}. Endereço: {{endereco}}.'],
+      blocks: ['{{encarregado}} Demais assuntos: {{contato}}. Endereço: {{endereco}}.'],
     },
   ],
 };

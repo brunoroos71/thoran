@@ -17,7 +17,7 @@ export const terms: LegalDoc = {
       id: 'aceitacao',
       title: '1. Quem somos e aceitação',
       blocks: [
-        'Estes Termos de Uso regulam o acesso e o uso do Thoran, disponível em {{site}} e nos aplicativos e serviços relacionados (a “Plataforma”), oferecido por {{empresa}}, inscrita no CNPJ sob o nº {{cnpj}}, com sede em {{endereco}} (“Thoran”, “nós”).',
+        'Estes Termos de Uso regulam o acesso e o uso do Thoran, disponível em {{site}} e nos aplicativos e serviços relacionados (a “Plataforma”), oferecido por {{identificacao}}, com endereço em {{endereco}} (“Thoran”, “nós”).',
         'Ao criar uma conta, contratar um plano ou usar a Plataforma, você (“Usuário”) declara que leu, entendeu e concorda com estes Termos, com a Política de Privacidade e com o Aviso de Risco, que fazem parte deste documento. Se não concordar, não use a Plataforma.',
       ],
     },

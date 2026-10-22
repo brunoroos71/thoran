@@ -1,6 +1,6 @@
 /**
  * Formato dos documentos legais. Os textos usam marcadores que a página troca pelos dados da empresa
- * (src/config/company.ts): {{empresa}}, {{cnpj}}, {{endereco}}, {{contato}}, {{privacidade}}, {{dpo}}, {{site}}.
+ * (src/config/company.ts): {{empresa}}, {{identificacao}}, {{endereco}}, {{contato}}, {{privacidade}}, {{encarregado}}, {{site}}.
  */
 export type LegalBlock = string | { list: string[] } | { note: string };
 

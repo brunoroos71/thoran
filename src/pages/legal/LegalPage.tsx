@@ -16,9 +16,10 @@ const LINKS: [Kind, string, string][] = [
   ['risk', '/aviso-de-risco', 'Aviso de Risco'],
 ];
 
+const pj = COMPANY.type === 'pj';
 const FIELDS: Record<string, { value: string; label: string }> = {
-  empresa: { value: COMPANY.legalName, label: 'razão social' },
-  cnpj: { value: COMPANY.cnpj, label: 'CNPJ' },
+  empresa: { value: COMPANY.legalName, label: pj ? 'razão social' : 'nome completo do responsável' },
+  documento: { value: COMPANY.document, label: pj ? 'CNPJ' : 'CPF' },
   endereco: { value: COMPANY.address, label: 'endereço' },
   contato: { value: COMPANY.contactEmail, label: 'e-mail de contato' },
   privacidade: { value: COMPANY.privacyEmail, label: 'e-mail de privacidade' },
@@ -26,11 +27,20 @@ const FIELDS: Record<string, { value: string; label: string }> = {
   site: { value: COMPANY.site, label: 'site' },
 };
 
+/** Frases que mudam se o Thoran é oferecido por empresa (CNPJ) ou por pessoa física (CPF), e se há encarregado. */
+const COMPOSED: Record<string, string> = {
+  identificacao: pj ? '{{empresa}}, inscrita no CNPJ sob o nº {{documento}}' : '{{empresa}}, pessoa física inscrita no CPF sob o nº {{documento}}',
+  encarregado: COMPANY.dpoName
+    ? 'Encarregado pelo tratamento de dados pessoais (DPO): {{dpo}}, contato {{privacidade}}.'
+    : 'Canal de atendimento ao titular de dados pessoais: {{privacidade}}. Por se enquadrar como agente de tratamento de pequeno porte, o Thoran não indicou encarregado, conforme a Resolução CD/ANPD nº 2/2022, e responde pelo canal acima.',
+};
+
 /** Troca {{campo}} pelos dados da empresa; campo vazio aparece destacado para não passar no lançamento. */
-function fill(text: string) {
-  return text.split(/(\{\{\w+\}\})/g).map((part, i) => {
+function fill(text: string): React.ReactNode[] {
+  return text.split(/(\{\{\w+\}\})/g).flatMap((part, i) => {
     const m = /^\{\{(\w+)\}\}$/.exec(part);
-    if (!m) return <Fragment key={i}>{part}</Fragment>;
+    if (!m) return [<Fragment key={i}>{part}</Fragment>];
+    if (COMPOSED[m[1]]) return [<Fragment key={i}>{fill(COMPOSED[m[1]])}</Fragment>];
     const f = FIELDS[m[1]];
     if (f?.value) {
       const isEmail = f.value.includes('@');
@@ -42,11 +52,11 @@ function fill(text: string) {
         <Fragment key={i}>{f.value}</Fragment>
       );
     }
-    return (
+    return [
       <mark key={i} className="rounded bg-trovao/20 px-1 text-trovao">
         [preencher: {f?.label ?? m[1]}]
-      </mark>
-    );
+      </mark>,
+    ];
   });
 }
 
