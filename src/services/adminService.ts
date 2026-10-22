@@ -48,3 +48,91 @@ function demoRows(): WaitlistRow[] {
     };
   });
 }
+
+/* ───────────── Painel administrativo (/admin) ───────────── */
+
+export interface DailyPoint {
+  day: string;
+  n?: number;
+  cents?: number;
+}
+
+export interface AdminDashboard {
+  generated_at: string;
+  accounts: { total: number; today: number; d7: number; d30: number; daily: DailyPoint[] };
+  subscriptions: { paying: number; by_plan: { plan: string; cycle: string; n: number }[]; trial: number; conversion: number; mrr_cents: number };
+  revenue: { month_cents: number; d30_cents: number; total_cents: number; topups_month: number; daily: DailyPoint[] };
+  usage: {
+    analyses_d30: number;
+    questions_d30: number;
+    refunds_d30: number;
+    credits_d30: number;
+    active_users_d7: number;
+    daily: DailyPoint[];
+    agent_calls_d30: number;
+    agent_errors_d30: number;
+  };
+  health: {
+    grace: number;
+    delinquent: number;
+    cancel_scheduled: number;
+    webhook_errors: number;
+    recent_events: { id: string; type: string; processed: boolean; error: string | null; received_at: string }[];
+  };
+}
+
+export interface AdminAccount {
+  id: string;
+  email: string;
+  created_at: string;
+  last_sign_in_at: string | null;
+  plan: string | null;
+  cycle: string | null;
+  status: string | null;
+  period_end: string | null;
+  cancel_at_period_end: boolean | null;
+  balance: number;
+  last_use: string | null;
+  used_d30: number;
+  paid_cents: number;
+  is_admin: boolean;
+}
+
+type AdminError = { error: 'auth' | 'forbidden' | 'generic' };
+
+async function adminGet<T>(qs: string): Promise<T | AdminError> {
+  if (!supabase) return { error: 'generic' };
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) return { error: 'auth' };
+  const res = await fetch(`${functionsUrl('admin-stats')}?${qs}`, { headers: { Authorization: `Bearer ${data.session.access_token}` } });
+  if (res.status === 401) return { error: 'auth' };
+  if (res.status === 403) return { error: 'forbidden' };
+  if (!res.ok) return { error: 'generic' };
+  return (await res.json()) as T;
+}
+
+export const fetchDashboard = () => (hasSupabase ? adminGet<AdminDashboard>('view=overview') : Promise.resolve(demoDashboard()));
+export const fetchAccounts = (q: string, offset = 0, limit = 50) =>
+  hasSupabase
+    ? adminGet<{ total: number; rows: AdminAccount[] }>(`view=accounts&q=${encodeURIComponent(q)}&offset=${offset}&limit=${limit}`)
+    : Promise.resolve({ total: 0, rows: [] as AdminAccount[] });
+
+export function accountsCsv(rows: AdminAccount[]) {
+  const cols: (keyof AdminAccount)[] = ['email', 'created_at', 'last_sign_in_at', 'plan', 'cycle', 'status', 'balance', 'used_d30', 'paid_cents', 'last_use'];
+  const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  return [cols.join(','), ...rows.map((r) => cols.map((c) => esc(r[c])).join(','))].join('\n');
+}
+
+// Modo demonstração (sem Supabase): números fictícios só para ver o layout.
+function demoDashboard(): AdminDashboard {
+  const days = Array.from({ length: 30 }, (_, i) => new Date(Date.now() - (29 - i) * 864e5).toISOString().slice(0, 10));
+  const wave = (i: number, b: number) => Math.max(0, Math.round(b + Math.sin(i / 3) * b * 0.6 + (i / 30) * b));
+  return {
+    generated_at: new Date().toISOString(),
+    accounts: { total: 412, today: 9, d7: 61, d30: 214, daily: days.map((day, i) => ({ day, n: wave(i, 6) })) },
+    subscriptions: { paying: 38, by_plan: [{ plan: 'basic', cycle: 'mensal', n: 21 }, { plan: 'pro', cycle: 'mensal', n: 14 }, { plan: 'pro', cycle: 'anual', n: 3 }], trial: 374, conversion: 9.2, mrr_cents: 21 * 2990 + 14 * 4990 + 3 * 4158 },
+    revenue: { month_cents: 168520, d30_cents: 201330, total_cents: 402770, topups_month: 7, daily: days.map((day, i) => ({ day, cents: wave(i, 6000) })) },
+    usage: { analyses_d30: 1840, questions_d30: 920, refunds_d30: 12, credits_d30: 10120, active_users_d7: 96, daily: days.map((day, i) => ({ day, n: wave(i, 90) })), agent_calls_d30: 2772, agent_errors_d30: 12 },
+    health: { grace: 1, delinquent: 0, cancel_scheduled: 2, webhook_errors: 0, recent_events: [] },
+  };
+}

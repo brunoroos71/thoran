@@ -10,6 +10,7 @@ const PlansPublic = lazy(() => import('@/pages/PlansPublic'));
 const LegalPage = lazy(() => import('@/pages/legal/LegalPage'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const AdminWaitlist = lazy(() => import('@/pages/admin/AdminWaitlist'));
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const Auth = {
   Login: lazy(() => import('@/pages/auth/AuthPages').then((m) => ({ default: m.LoginPage }))),
   Signup: lazy(() => import('@/pages/auth/AuthPages').then((m) => ({ default: m.SignupPage }))),
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/entrar" element={<Auth.Login />} />
           <Route path="/recuperar-senha" element={<Auth.Reset />} />
           <Route path="/nova-senha" element={<Auth.Update />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/lista" element={<AdminWaitlist />} />
 
           {env.waitlistMode ? (

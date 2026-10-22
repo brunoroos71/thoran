@@ -39,3 +39,6 @@ verify_jwt = false   # autenticado pela assinatura do gateway
 
 [functions.billing-cron]
 verify_jwt = false   # protegido por CRON_SECRET
+
+[functions.admin-stats]
+verify_jwt = false   # login e is_admin conferidos dentro da função (userFromRequest)
