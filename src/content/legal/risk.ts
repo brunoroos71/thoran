@@ -72,7 +72,7 @@ export const risk: LegalDoc = {
       title: '5. A decisão é sua',
       blocks: [
         'Toda decisão de investir, comprar, vender ou manter ativos é exclusivamente sua, assim como os resultados dessa decisão. Invista apenas recursos que você pode perder sem comprometer sua vida financeira, use ferramentas de controle de risco (como stop) e conheça bem o produto antes de operar.',
-        'Se precisar de orientação personalizada, procure um profissional habilitado: analista de valores mobiliários credenciado (CNPI), consultor de valores mobiliários autorizado pela CVM ou assessor de investimento vinculado a uma instituição autorizada. Você pode consultar se um profissional é habilitado no site da CVM.',
+        'Se precisar de orientação personalizada, procure um profissional habilitado: analista de valores mobiliários credenciado na APIMEC (com o certificado CNPI), consultor de valores mobiliários autorizado pela CVM ou assessor de investimento vinculado a uma instituição autorizada. A lista dos analistas credenciados fica no site da APIMEC; a dos consultores autorizados, no site da CVM.',
       ],
     },
     {

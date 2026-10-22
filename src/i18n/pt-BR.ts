@@ -12,7 +12,7 @@ const ptBR = {
     illustrative: 'Exemplo ilustrativo, com dados fictícios',
     // D2/D3 das "Regras do agente": o mesmo aviso que o agente põe no topo de toda resposta, e o fecho.
     disclaimer:
-      'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura. Não digo se você deve comprar, quando entrar nem quanto colocar.',
+      'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada na APIMEC nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura. Não digo se você deve comprar, quando entrar nem quanto colocar.',
     legalPlaceholder: '[TEXTO JURÍDICO A REVISAR]',
     pricePlaceholder: '[PREÇO A DEFINIR]',
     back: 'Voltar',
@@ -156,7 +156,8 @@ const ptBR = {
       'O que cada candidato do 2º turno propõe para a economia?',
       'Como funciona o mini-índice e qual o risco?',
     ],
-    footer: 'O Thoran não faz recomendação de investimento. Resultados passados não garantem resultados futuros.',
+    footer:
+      'O Thoran é uma IA e pode errar. Não é recomendação de investimento: a empresa não é analista credenciada na APIMEC nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura.',
     about: 'Como funciona',
     plans: 'Planos',
     gateTitle: 'Crie sua conta grátis para ver a resposta',
@@ -337,7 +338,7 @@ const ptBR = {
     items: [
       {
         q: 'O Thoran diz o que comprar ou vender?',
-        a: 'Não. O Thoran mostra o que aconteceu em casos parecidos no passado e com que frequência. No Brasil, recomendação de investimento exige analista credenciado na CVM. A decisão é sempre sua.',
+        a: 'Não. O Thoran mostra o que aconteceu em casos parecidos no passado e com que frequência. No Brasil, análise e recomendação de valores mobiliários exigem analista credenciado na APIMEC (Resolução CVM 20), e orientação individual exige consultor autorizado pela CVM (Resolução CVM 19). O Thoran não é nenhum dos dois: é uma IA, e pode errar. A decisão é sempre sua.',
       },
       {
         q: 'Preciso ser trader experiente?',
@@ -377,7 +378,7 @@ const ptBR = {
     contact: 'Contato',
     rights: '© 2026 Thoran. Todos os direitos reservados.',
     legal:
-      'O Thoran é uma ferramenta de informação e educação. Não é consultoria, análise ou recomendação de investimento nos termos da Resolução CVM nº 20/2021. Resultados passados não garantem resultados futuros. Operar no mercado envolve risco de perda.',
+      'O Thoran é uma ferramenta de informação e educação. Não é análise nem recomendação de investimento (Resolução CVM nº 20/2021), nem consultoria (Resolução CVM nº 19/2021). Resultados passados não garantem resultados futuros. Operar no mercado envolve risco de perda.',
   },
   thanks: {
     eyebrow: 'Confirmado',

@@ -17,7 +17,7 @@ const API_KEY = Deno.env.get('AGENT_API_KEY');
 const TIMEOUT_MS = 60_000;
 // Os textos D2/D3 e o fecho das "Regras do agente". O agente sempre manda o dele; este é só a rede de segurança.
 const DISCLAIMER =
-  'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura. Não digo se você deve comprar, quando entrar nem quanto colocar.';
+  'Sou uma IA e posso errar. Isto não é recomendação de investimento: a empresa não é analista credenciada na APIMEC nem consultora autorizada pela CVM. Rentabilidade passada não indica rentabilidade futura. Não digo se você deve comprar, quando entrar nem quanto colocar.';
 
 const sse = (event: string, data: unknown) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 // Caracteres de controle que a analyze recusa. O \u000B é a quebra de linha manual do Word: vira quebra de linha.

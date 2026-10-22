@@ -6,9 +6,6 @@ import type { AgentChunk, AgentService, AnalysisResponse, AnalyzeRequest, Direct
  * "Exemplo ilustrativo, com dados fictícios" quando AGENT_MODE=mock.
  */
 
-const DISCLAIMER =
-  'O Thoran não faz recomendação de investimento. Resultados passados não garantem resultados futuros. Operar no mercado envolve risco de perda.';
-
 interface Scenario {
   match: RegExp;
   market: Market;
@@ -189,7 +186,6 @@ export function buildMockAnalysis(req: AnalyzeRequest): AnalysisResponse {
     stats: s.stats(moves),
     chart: { unit: '%', now_index: nowIndex, current, precedents },
     explanation: s.explanation,
-    disclaimer: DISCLAIMER,
   };
 }
 
