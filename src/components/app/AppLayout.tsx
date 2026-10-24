@@ -47,6 +47,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         {h.newChat}
       </button>
 
+      <NavLink to="/app/cenarios" onClick={onNavigate} className={item}>Comparar cenários</NavLink>
       <p className="mt-4 px-3 text-xs text-meta">{h.recent}</p>
       <nav aria-label={h.recent} className="-mx-1 flex-1 overflow-y-auto px-1">
         {recent.length === 0 ? (

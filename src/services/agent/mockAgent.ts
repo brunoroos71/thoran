@@ -1,10 +1,22 @@
 import type { AgentChunk, AgentService, AnalysisResponse, AnalyzeRequest, Direction, Market, Relevance, StreamOptions } from './types';
+import type { ScenarioResult } from './scenario-contract';
+import scenarioFixtures from './scenario-fixtures.json';
 
 /**
  * Agente simulado. Segue exatamente o contrato de types.ts.
- * TODOS os números aqui são FICTÍCIOS; a interface marca as respostas como
+ * Os cartões de conversa são FICTÍCIOS; a interface marca essas respostas como
  * "Exemplo ilustrativo, com dados fictícios" quando AGENT_MODE=mock.
  */
+// Cenários usam uma fotografia real e fixa, identificada como demonstração na tela.
+function demoScenarios(req: AnalyzeRequest): AnalysisResponse {
+  const r = req.scenario_request!;
+  const result = (scenarioFixtures as Record<string, ScenarioResult>)[`${r.currency}_${r.horizon}_${r.objective}`];
+  if (!result) throw new Error('Cenário indisponível');
+  return { id: `mock_${crypto.randomUUID()}`, event: { title: `Cenários ${r.currency}/BRL · demonstração`, detected_at: new Date().toISOString() },
+    precedents: { count: 0, period: { from: '', to: '' }, items: [] }, stats: [],
+    scenarios: result, explanation: result.conclusion, short: result.conclusion,
+    disclaimer: 'Demonstração com fotografia histórica de 22/10/2026. Não é uma cotação atual nem recomendação de investimento.' };
+}
 
 const DISCLAIMER =
   'O Thoran não faz recomendação de investimento. Resultados passados não garantem resultados futuros. Operar no mercado envolve risco de perda.';
@@ -203,6 +215,13 @@ const sleep = (ms: number, signal?: AbortSignal) =>
   });
 
 async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGenerator<AgentChunk> {
+  if (req.scenario_request) {
+    const data = demoScenarios(req);
+    yield { type: 'text', delta: data.explanation };
+    yield { type: 'analysis', data };
+    yield { type: 'done' };
+    return;
+  }
   const s = pickScenario(req);
   await sleep(700, opts.signal); // "buscando precedentes"
   // pergunta rápida: só o texto, sem card de análise completa
@@ -221,6 +240,7 @@ async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGene
 
 async function analyze(req: AnalyzeRequest, opts: { signal?: AbortSignal } = {}) {
   await sleep(400, opts.signal);
+  if (req.scenario_request) return demoScenarios(req);
   return buildMockAnalysis(req);
 }
 

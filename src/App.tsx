@@ -21,6 +21,7 @@ const AppLayout = lazy(() => import('@/components/app/AppLayout').then((m) => ({
 const RequireAuth = lazy(() => import('@/components/app/RequireAuth').then((m) => ({ default: m.RequireAuth })));
 const Onboarding = lazy(() => import('@/pages/app/Onboarding'));
 const Chat = lazy(() => import('@/pages/app/Chat'));
+const Scenarios = lazy(() => import('@/pages/app/Scenarios'));
 const Analysis = lazy(() => import('@/pages/app/Analysis'));
 const History = lazy(() => import('@/pages/app/History'));
 const Alerts = lazy(() => import('@/pages/app/Alerts'));
@@ -72,6 +73,7 @@ export default function App() {
                 }
               >
                 <Route index element={<Chat />} />
+                <Route path="cenarios" element={<Scenarios />} />
                 <Route path="analise/:id" element={<Analysis />} />
                 <Route path="historico" element={<History />} />
                 <Route path="alertas" element={<Alerts />} />

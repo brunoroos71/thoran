@@ -15,14 +15,23 @@ async function authHeaders(): Promise<Record<string, string>> {
 async function open(req: AnalyzeRequest, signal?: AbortSignal, mode: StreamOptions['mode'] = 'analise') {
   let res: Response;
   try {
+    const headers = await authHeaders();
+    if (req.scenario_request) {
+      const capability = await fetch(functionsUrl('agent-proxy'), { method: 'GET', headers, signal, cache: 'no-store' });
+      if (capability.status === 401) throw new AgentError('unauthorized');
+      if (!capability.ok || (await capability.json()).scenarios_version !== 1) {
+        throw new AgentError('offline', 'A comparação ainda não foi ativada no servidor. Nenhum crédito foi debitado.');
+      }
+    }
     res = await fetch(functionsUrl('agent-proxy'), {
       method: 'POST',
-      headers: await authHeaders(),
+      headers,
       body: JSON.stringify({ ...req, mode }),
       signal,
     });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw e;
+    if (e instanceof AgentError) throw e;
     throw new AgentError('offline');
   }
   if (res.status === 401) throw new AgentError('unauthorized');

@@ -11,6 +11,8 @@
 import { admin, userFromRequest } from '../_shared/supabase.ts';
 import { cors, json } from '../_shared/http.ts';
 import { notifyLowBalance } from '../_shared/credits.ts';
+import { isScenarioRequest, matchesScenarioResponse, scenarioQuestion } from '../_shared/scenarios.ts';
+import type { ScenarioResult } from '../_shared/scenario-contract.ts';
 
 const API_URL = Deno.env.get('AGENT_API_URL'); // ex.: https://<projeto>.supabase.co/functions/v1
 const API_KEY = Deno.env.get('AGENT_API_KEY');
@@ -29,6 +31,7 @@ type Analysis = Record<string, unknown> & {
   short?: string;
   disclaimer?: string;
   filtered?: boolean; // o filtro de saída barrou o texto e mandou a mensagem de segurança
+  scenarios?: ScenarioResult;
 
   query_redacted?: string;
   precedents?: { count?: number } & Record<string, unknown>;
@@ -43,19 +46,24 @@ const isAnalysis = (x: unknown): x is Analysis =>
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
-  if (req.method !== 'POST') return json({ code: 'generic' }, 405);
+  if (!['POST', 'GET'].includes(req.method)) return json({ code: 'generic' }, 405);
 
   const user = await userFromRequest(req);
   if (!user) return json({ code: 'unauthorized' }, 401);
+  // Consulta sem débito: protege o cliente novo durante a publicação gradual dos dois repositórios.
+  if (req.method === 'GET') return json({ scenarios_version: 1 });
 
   // Entrada no formato do contrato
-  let input: { query?: string; market?: string | null; locale?: string; mode?: string };
+  let input: { query?: string; market?: string | null; locale?: string; mode?: string; scenario_request?: unknown };
   try {
     input = await req.json();
   } catch {
     return json({ code: 'generic' }, 400);
   }
-  const query = String(input.query ?? '').replace(/\u000B/g, '\n').replace(CONTROL, ' ').trim().slice(0, 2000);
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return json({ code: 'generic' }, 400);
+  if (input.scenario_request !== undefined && (!isScenarioRequest(input.scenario_request) || input.mode === 'pergunta')) return json({ code: 'generic' }, 400);
+  const scenarioRequest = isScenarioRequest(input.scenario_request) ? input.scenario_request : undefined;
+  const query = scenarioRequest ? scenarioQuestion(scenarioRequest) : String(input.query ?? '').replace(/\u000B/g, '\n').replace(CONTROL, ' ').trim().slice(0, 2000);
   if (!query) return json({ code: 'generic' }, 400);
   const market = ['b3', 'crypto', 'global'].includes(String(input.market)) ? input.market : null;
   const locale = input.locale === 'en-US' ? 'en-US' : 'pt-BR';
@@ -98,7 +106,7 @@ Deno.serve(async (req) => {
     const upstream = await fetch(`${API_URL.replace(/\/$/, '')}/analyze`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${API_KEY}`, 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ query, market, locale }),
+      body: JSON.stringify({ query, market, locale, scenario_request: scenarioRequest }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!upstream.ok) return await failed(upstream.status);
@@ -107,15 +115,16 @@ Deno.serve(async (req) => {
     return await failed(0, e);
   }
   if (!isAnalysis(analysis)) return await failed(200, 'resposta fora do contrato');
+  if (scenarioRequest && !matchesScenarioResponse(analysis.scenarios, scenarioRequest)) return await failed(200, 'cenários fora do contrato');
 
   const { query_redacted, filtered, ...a } = analysis;
   if (!a.disclaimer) a.disclaimer = DISCLAIMER; // compliance: sempre com aviso
   const short = a.short || a.explanation;
-  const hasCard = (a.precedents?.count ?? 0) > 0;
+  const hasCard = (a.precedents?.count ?? 0) > 0 || a.scenarios?.status === 'ready';
 
   // O filtro barrou o texto: a pessoa recebe a mensagem de segurança e não paga pela falha.
   // Análise sem cartão: devolve os 5 e cobra 1, como pergunta (só se o estorno entrou, para não cobrar 5 + 1).
-  if (filtered) {
+  if (filtered || (scenarioRequest && a.scenarios?.status === 'insufficient')) {
     await refund();
   } else if (kind === 'consumo_analise' && !hasCard && (await refund())) {
     await admin.rpc('consume_credits', { p_user: user.id, p_kind: 'consumo_pergunta', p_ref: `${callRef}:pergunta` });

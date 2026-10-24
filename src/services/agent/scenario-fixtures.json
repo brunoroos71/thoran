@@ -1,0 +1,938 @@
+{
+  "USD_5_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 5,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.4136056065732214,
+        "reference_rate": 5.159904691275978,
+        "impact": "O custo em reais de uma obrigação fixa em USD aumentaria 2,41% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.4136056065732214,
+        "reference_rate": 4.916695308724021,
+        "impact": "O custo em reais de uma obrigação fixa em USD diminuiria 2,41% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 2.4136056065732214,
+      "min_pct": -8.484354967254582,
+      "median_pct": 0.08562429283509587,
+      "max_pct": 7.199513058033591
+    }
+  },
+  "USD_5_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 5,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.4136056065732214,
+        "reference_rate": 5.159904691275978,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia mais 2,41% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.4136056065732214,
+        "reference_rate": 4.916695308724021,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia menos 2,41% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 2.4136056065732214,
+      "min_pct": -8.484354967254582,
+      "median_pct": 0.08562429283509587,
+      "max_pct": 7.199513058033591
+    }
+  },
+  "USD_5_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 5,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.4136056065732214,
+        "reference_rate": 5.159904691275978,
+        "impact": "O valor em reais de uma unidade de USD subiria 2,41%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.4136056065732214,
+        "reference_rate": 4.916695308724021,
+        "impact": "O valor em reais de uma unidade de USD cairia 2,41%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 2.4136056065732214,
+      "min_pct": -8.484354967254582,
+      "median_pct": 0.08562429283509587,
+      "max_pct": 7.199513058033591
+    }
+  },
+  "USD_20_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 20,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.573552914107917,
+        "reference_rate": 5.268729316471499,
+        "impact": "O custo em reais de uma obrigação fixa em USD aumentaria 4,57% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.573552914107917,
+        "reference_rate": 4.807870683528501,
+        "impact": "O custo em reais de uma obrigação fixa em USD diminuiria 4,57% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 4.573552914107917,
+      "min_pct": -15.013079708261866,
+      "median_pct": 0.3748438150770639,
+      "max_pct": 13.674944366765796
+    }
+  },
+  "USD_20_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 20,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.573552914107917,
+        "reference_rate": 5.268729316471499,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia mais 4,57% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.573552914107917,
+        "reference_rate": 4.807870683528501,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia menos 4,57% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 4.573552914107917,
+      "min_pct": -15.013079708261866,
+      "median_pct": 0.3748438150770639,
+      "max_pct": 13.674944366765796
+    }
+  },
+  "USD_20_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 20,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.573552914107917,
+        "reference_rate": 5.268729316471499,
+        "impact": "O valor em reais de uma unidade de USD subiria 4,57%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.573552914107917,
+        "reference_rate": 4.807870683528501,
+        "impact": "O valor em reais de uma unidade de USD cairia 4,57%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 4.573552914107917,
+      "min_pct": -15.013079708261866,
+      "median_pct": 0.3748438150770639,
+      "max_pct": 13.674944366765796
+    }
+  },
+  "USD_60_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 60,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.921363166622597,
+        "reference_rate": 5.437402040423946,
+        "impact": "O custo em reais de uma obrigação fixa em USD aumentaria 7,92% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.921363166622597,
+        "reference_rate": 4.6391979595760535,
+        "impact": "O custo em reais de uma obrigação fixa em USD diminuiria 7,92% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 7.921363166622597,
+      "min_pct": -15.845326613547229,
+      "median_pct": 0.6290453074433655,
+      "max_pct": 33.779085936775765
+    }
+  },
+  "USD_60_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 60,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.921363166622597,
+        "reference_rate": 5.437402040423946,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia mais 7,92% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.921363166622597,
+        "reference_rate": 4.6391979595760535,
+        "impact": "Um recebimento fixo em USD convertido em reais renderia menos 7,92% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 7.921363166622597,
+      "min_pct": -15.845326613547229,
+      "median_pct": 0.6290453074433655,
+      "max_pct": 33.779085936775765
+    }
+  },
+  "USD_60_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "USD",
+      "horizon": 60,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 1",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.921363166622597,
+        "reference_rate": 5.437402040423946,
+        "impact": "O valor em reais de uma unidade de USD subiria 7,92%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.921363166622597,
+        "reference_rate": 4.6391979595760535,
+        "impact": "O valor em reais de uma unidade de USD cairia 7,92%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2509,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.0383,
+      "amplitude_pct": 7.921363166622597,
+      "min_pct": -15.845326613547229,
+      "median_pct": 0.6290453074433655,
+      "max_pct": 33.779085936775765
+    }
+  },
+  "EUR_5_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 5,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.2365849992484588,
+        "reference_rate": 5.775753632947542,
+        "impact": "O custo em reais de uma obrigação fixa em EUR aumentaria 2,24% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.2365849992484588,
+        "reference_rate": 5.523046367052458,
+        "impact": "O custo em reais de uma obrigação fixa em EUR diminuiria 2,24% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 2.2365849992484588,
+      "min_pct": -6.658510424348063,
+      "median_pct": -0.09253230062715723,
+      "max_pct": 9.931582432134189
+    }
+  },
+  "EUR_5_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 5,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.2365849992484588,
+        "reference_rate": 5.775753632947542,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia mais 2,24% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.2365849992484588,
+        "reference_rate": 5.523046367052458,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia menos 2,24% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 2.2365849992484588,
+      "min_pct": -6.658510424348063,
+      "median_pct": -0.09253230062715723,
+      "max_pct": 9.931582432134189
+    }
+  },
+  "EUR_5_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 5,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 2.2365849992484588,
+        "reference_rate": 5.775753632947542,
+        "impact": "O valor em reais de uma unidade de EUR subiria 2,24%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -2.2365849992484588,
+        "reference_rate": 5.523046367052458,
+        "impact": "O valor em reais de uma unidade de EUR cairia 2,24%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 501,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 2.2365849992484588,
+      "min_pct": -6.658510424348063,
+      "median_pct": -0.09253230062715723,
+      "max_pct": 9.931582432134189
+    }
+  },
+  "EUR_20_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 20,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.815437920964372,
+        "reference_rate": 5.921443349906961,
+        "impact": "O custo em reais de uma obrigação fixa em EUR aumentaria 4,82% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.815437920964372,
+        "reference_rate": 5.377356650093039,
+        "impact": "O custo em reais de uma obrigação fixa em EUR diminuiria 4,82% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 4.815437920964372,
+      "min_pct": -11.172248803827756,
+      "median_pct": 0.38956958843858747,
+      "max_pct": 11.727937281491684
+    }
+  },
+  "EUR_20_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 20,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.815437920964372,
+        "reference_rate": 5.921443349906961,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia mais 4,82% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.815437920964372,
+        "reference_rate": 5.377356650093039,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia menos 4,82% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 4.815437920964372,
+      "min_pct": -11.172248803827756,
+      "median_pct": 0.38956958843858747,
+      "max_pct": 11.727937281491684
+    }
+  },
+  "EUR_20_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 20,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 4.815437920964372,
+        "reference_rate": 5.921443349906961,
+        "impact": "O valor em reais de uma unidade de EUR subiria 4,82%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -4.815437920964372,
+        "reference_rate": 5.377356650093039,
+        "impact": "O valor em reais de uma unidade de EUR cairia 4,82%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 125,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 4.815437920964372,
+      "min_pct": -11.172248803827756,
+      "median_pct": 0.38956958843858747,
+      "max_pct": 11.727937281491684
+    }
+  },
+  "EUR_60_pay": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 60,
+      "objective": "pay"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.217015642964153,
+        "reference_rate": 6.057118081733617,
+        "impact": "O custo em reais de uma obrigação fixa em EUR aumentaria 7,22% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.217015642964153,
+        "reference_rate": 5.241681918266383,
+        "impact": "O custo em reais de uma obrigação fixa em EUR diminuiria 7,22% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se há uma despesa certa em moeda estrangeira e uma alta comprometeria seu orçamento, a prioridade é reduzir essa exposição antes do vencimento. Compare reservar a moeda da despesa com conversões em etapas e seus custos. Em A isso reduz o risco de encarecimento; em B você pode perder a oportunidade de uma conversão mais barata. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar compra hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 7.217015642964153,
+      "min_pct": -19.11810727921387,
+      "median_pct": 1.031149631951811,
+      "max_pct": 32.85305646784615
+    }
+  },
+  "EUR_60_receive": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 60,
+      "objective": "receive"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.217015642964153,
+        "reference_rate": 6.057118081733617,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia mais 7,22% antes de custos.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.217015642964153,
+        "reference_rate": 5.241681918266383,
+        "impact": "Um recebimento fixo em EUR convertido em reais renderia menos 7,22% antes de custos.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "Se esse recebimento precisa pagar compromissos em reais e uma queda comprometeria seu orçamento, a prioridade é reduzir o descasamento entre as moedas. Compare converter conforme os vencimentos com manter a exposição e seus custos. Em B isso reduz o risco de receber menos reais; em A você pode abrir mão de uma conversão mais favorável. Sem prazo, orçamento e custos, não há base para definir quanto converter ou recomendar venda hoje.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 7.217015642964153,
+      "min_pct": -19.11810727921387,
+      "median_pct": 1.031149631951811,
+      "max_pct": 32.85305646784615
+    }
+  },
+  "EUR_60_compare": {
+    "version": 1,
+    "status": "ready",
+    "request": {
+      "currency": "EUR",
+      "horizon": 60,
+      "objective": "compare"
+    },
+    "as_of": "2026-10-22",
+    "source": {
+      "name": "Banco Central SGS 21619",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21619/dados?formato=json"
+    },
+    "scenarios": [
+      {
+        "id": "A",
+        "title": "Moeda estrangeira em alta",
+        "change_pct": 7.217015642964153,
+        "reference_rate": 6.057118081733617,
+        "impact": "O valor em reais de uma unidade de EUR subiria 7,22%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: menor oferta ou maior demanda pela moeda estrangeira. Fluxos internacionais e expectativas econômicas podem mudar essa relação; a intensidade aqui é apenas a sensibilidade calculada."
+      },
+      {
+        "id": "B",
+        "title": "Moeda estrangeira em queda",
+        "change_pct": -7.217015642964153,
+        "reference_rate": 5.241681918266383,
+        "impact": "O valor em reais de uma unidade de EUR cairia 7,22%. O efeito depende da sua exposição.",
+        "conditions": "Hipótese: maior oferta ou menor demanda pela moeda estrangeira. Os mesmos fatores podem atuar na direção oposta; nenhuma condição isolada garante a queda."
+      }
+    ],
+    "conclusion": "A comparação quantifica a exposição às duas direções, mas não identifica uma delas como mais provável. Para uma aposta de valorização, a evidência é insuficiente para recomendar compra ou venda. Se o objetivo for pagar ou receber em outra moeda, escolha esse objetivo para avaliar o risco correspondente.",
+    "method": "Retornos simples em janelas sem sobreposição de intervalos, contadas para trás desde a última observação, no recorte de até dez anos. A amplitude dos dois cenários é o percentil 80 do valor absoluto desses retornos (interpolação linear). A e B usam a mesma amplitude, com sinais opostos. Isso é um teste de sensibilidade: não é previsão, intervalo de confiança nem probabilidade de 80%. Janelas com lacunas superiores a dez dias corridos são excluídas; exigimos ao menos 30 janelas válidas.",
+    "limitations": [
+      "A referência é uma cotação histórica em reais por unidade de moeda estrangeira, não uma oferta de câmbio. Spread, tarifas, impostos e rendimento do dinheiro não estão incluídos.",
+      "Os dois cenários não esgotam os resultados possíveis. Movimentos maiores podem ocorrer; o histórico não determina a próxima direção.",
+      "As condições econômicas são hipóteses explicativas, sem efeito causal estimado. Não atribuímos probabilidades aos cenários nem vinculamos resultados a candidatos.",
+      "O recorte cobre apenas câmbio. Não representa toda a informação de mercado dos últimos dez anos nem avalia sua carteira."
+    ],
+    "evidence": {
+      "from": "2016-10-24",
+      "to": "2026-10-22",
+      "observations": 2507,
+      "windows": 41,
+      "excluded_windows": 0,
+      "reference_rate": 5.6494,
+      "amplitude_pct": 7.217015642964153,
+      "min_pct": -19.11810727921387,
+      "median_pct": 1.031149631951811,
+      "max_pct": 32.85305646784615
+    }
+  }
+}
