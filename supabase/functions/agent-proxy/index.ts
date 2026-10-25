@@ -1,3 +1,4 @@
+import { isBitcoinDecision, validBitcoinStudy } from '../_shared/bitcoin.ts';
 // POST /agent-proxy — único caminho entre o front e o agente.
 // 1) valida o usuário  2) debita créditos (antes de chamar)  3) chama o agente com a chave secreta
 // 4) grava analyses + agent_calls  5) devolve em SSE (text, analysis, done)  6) estorna se o agente falhar
@@ -30,6 +31,9 @@ type Analysis = Record<string, unknown> & {
   explanation: string;
   short?: string;
   disclaimer?: string;
+  no_charge?: boolean;
+  bitcoin_version?: number;
+  bitcoin_study?: unknown;
   filtered?: boolean; // o filtro de saída barrou o texto e mandou a mensagem de segurança
   scenarios?: ScenarioResult;
 
@@ -51,7 +55,7 @@ Deno.serve(async (req) => {
   const user = await userFromRequest(req);
   if (!user) return json({ code: 'unauthorized' }, 401);
   // Consulta sem débito: protege o cliente novo durante a publicação gradual dos dois repositórios.
-  if (req.method === 'GET') return json({ scenarios_version: 1 });
+  if (req.method === 'GET') return json({ scenarios_version: 1, bitcoin_version: 1 });
 
   // Entrada no formato do contrato
   let input: { query?: string; market?: string | null; locale?: string; mode?: string; scenario_request?: unknown };
@@ -117,14 +121,18 @@ Deno.serve(async (req) => {
   if (!isAnalysis(analysis)) return await failed(200, 'resposta fora do contrato');
   if (scenarioRequest && !matchesScenarioResponse(analysis.scenarios, scenarioRequest)) return await failed(200, 'cenários fora do contrato');
 
-  const { query_redacted, filtered, ...a } = analysis;
+  if (!scenarioRequest && isBitcoinDecision(query) && (analysis.bitcoin_version !== 1 ||
+      (analysis.bitcoin_study ? !validBitcoinStudy(analysis.bitcoin_study) || analysis.bitcoin_study.scope !== 'commercial_approved' : analysis.no_charge !== true))) {
+    return await failed(200, 'estudo Bitcoin ausente ou fora do contrato');
+  }
+  const { query_redacted, filtered, no_charge, ...a } = analysis;
   if (!a.disclaimer) a.disclaimer = DISCLAIMER; // compliance: sempre com aviso
   const short = a.short || a.explanation;
-  const hasCard = (a.precedents?.count ?? 0) > 0 || a.scenarios?.status === 'ready';
+  const hasCard = (a.precedents?.count ?? 0) > 0 || a.scenarios?.status === 'ready' || !!a.bitcoin_study;
 
   // O filtro barrou o texto: a pessoa recebe a mensagem de segurança e não paga pela falha.
   // Análise sem cartão: devolve os 5 e cobra 1, como pergunta (só se o estorno entrou, para não cobrar 5 + 1).
-  if (filtered || (scenarioRequest && a.scenarios?.status === 'insufficient')) {
+  if (filtered || no_charge || (scenarioRequest && a.scenarios?.status === 'insufficient')) {
     await refund();
   } else if (kind === 'consumo_analise' && !hasCard && (await refund())) {
     await admin.rpc('consume_credits', { p_user: user.id, p_kind: 'consumo_pergunta', p_ref: `${callRef}:pergunta` });

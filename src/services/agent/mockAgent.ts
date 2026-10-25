@@ -1,3 +1,4 @@
+import { bitcoinResponse, bitcoinToday, isBitcoinDecision } from './bitcoin';
 import type { AgentChunk, AgentService, AnalysisResponse, AnalyzeRequest, Direction, Market, Relevance, StreamOptions } from './types';
 import type { ScenarioResult } from './scenario-contract';
 import scenarioFixtures from './scenario-fixtures.json';
@@ -16,6 +17,15 @@ function demoScenarios(req: AnalyzeRequest): AnalysisResponse {
     precedents: { count: 0, period: { from: '', to: '' }, items: [] }, stats: [],
     scenarios: result, explanation: result.conclusion, short: result.conclusion,
     disclaimer: 'Demonstração com fotografia histórica de 22/10/2026. Não é uma cotação atual nem recomendação de investimento.' };
+}
+
+async function demoBitcoin(signal?: AbortSignal): Promise<AnalysisResponse> {
+  let study: unknown;
+  try {
+    const res = await fetch('/bitcoin-research.json', { signal, cache: 'no-store' });
+    if (res.ok) study = await res.json();
+  } catch (e) { if ((e as Error).name === 'AbortError') throw e; }
+  return bitcoinResponse(study, bitcoinToday(), true);
 }
 
 const DISCLAIMER =
@@ -215,6 +225,13 @@ const sleep = (ms: number, signal?: AbortSignal) =>
   });
 
 async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGenerator<AgentChunk> {
+  if (!req.scenario_request && isBitcoinDecision(req.query)) {
+    const data = await demoBitcoin(opts.signal);
+    yield { type: 'text', delta: data.short! };
+    yield { type: 'analysis', data };
+    yield { type: 'done' };
+    return;
+  }
   if (req.scenario_request) {
     const data = demoScenarios(req);
     yield { type: 'text', delta: data.explanation };
@@ -241,6 +258,7 @@ async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGene
 async function analyze(req: AnalyzeRequest, opts: { signal?: AbortSignal } = {}) {
   await sleep(400, opts.signal);
   if (req.scenario_request) return demoScenarios(req);
+  if (isBitcoinDecision(req.query)) return demoBitcoin(opts.signal);
   return buildMockAnalysis(req);
 }
 

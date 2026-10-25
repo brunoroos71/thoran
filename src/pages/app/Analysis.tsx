@@ -1,3 +1,4 @@
+import { BitcoinComparison } from '@/components/app/BitcoinComparison';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '@/i18n';
@@ -62,7 +63,7 @@ export default function Analysis() {
           )}
           {fmtDate(row.created_at, locale)}
         </p>
-        {mock && <IllustrativeTag text={r.scenarios ? 'Demonstração · fotografia histórica de 22/10/2026' : t.common.illustrative} />}
+        {mock && !r.bitcoin_version && <IllustrativeTag text={r.scenarios ? 'Demonstração · fotografia histórica de 22/10/2026' : t.common.illustrative} />}
       </header>
 
       {r.stats.length > 0 && (
@@ -90,6 +91,7 @@ export default function Analysis() {
         <RichText text={r.explanation} className="mt-4 max-w-3xl" />
       </section>}
 
+      {r.bitcoin_study && <section className="mt-6"><BitcoinComparison study={r.bitcoin_study} /></section>}
       {hasCases && (
         <section className="mt-10" aria-labelledby="prec">
           <h2 id="prec" className="label text-nevoa">

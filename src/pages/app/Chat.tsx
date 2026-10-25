@@ -1,3 +1,5 @@
+import { BitcoinComparison } from '@/components/app/BitcoinComparison';
+import { isBitcoinDecision } from '@/services/agent/bitcoin';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useI18n } from '@/i18n';
@@ -72,7 +74,7 @@ export default function Chat() {
     const kind = md === 'analise' ? 'consumo_analise' : 'consumo_pergunta';
     try {
       // créditos: debita antes, estorna se o agente falhar (no live, isso acontece no /agent-proxy)
-      await charge(kind, `chat_${agentId}`, async () => {
+      const perform = async () => {
         for await (const chunk of agentService.stream({ query, market: mk, locale }, { signal, mode: md })) {
           if (chunk.type === 'text') patch(agentId, (m) => ({ ...m, text: m.text + chunk.delta }));
           else if (chunk.type === 'analysis') {
@@ -80,7 +82,9 @@ export default function Chat() {
             saveAnalysis(query, chunk.data);
           }
         }
-      });
+      };
+      if (mock && isBitcoinDecision(query)) await perform();
+      else await charge(kind, `chat_${agentId}`, perform);
       patch(agentId, (m) => ({ ...m, status: 'done' }));
     } catch (e) {
       if ((e as Error).name === 'AbortError') return patch(agentId, (m) => ({ ...m, status: 'done' }));
@@ -172,7 +176,7 @@ export default function Chat() {
       onStop={() => abort.current?.abort()}
       stopLabel={c.stop}
       tools={tools}
-      hint={`${cost} ${cost === 1 ? t.pricing.credit : t.pricing.credits}`}
+      hint={mock && isBitcoinDecision(input) ? 'Pesquisa interna · sem cobrança' : `${cost} ${cost === 1 ? t.pricing.credit : t.pricing.credits}`}
       autoFocus
       size={msgs.length ? 'md' : 'lg'}
     />
@@ -215,7 +219,8 @@ export default function Chat() {
                       {m.status === 'streaming' && <span aria-hidden className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-raio" />}
                     </RichText>
                   )}
-                  {mock && m.text && m.status === 'done' && <IllustrativeTag text={t.common.illustrative} />}
+                  {mock && !m.analyses.some(a => a.bitcoin_version) && m.text && m.status === 'done' && <IllustrativeTag text={t.common.illustrative} />}
+                  {m.analyses.filter(a => a.bitcoin_study).map(a => <BitcoinComparison key={a.id} study={a.bitcoin_study!} />)}
                   {m.analyses
                     .filter((a) => a.precedents.count > 0)
                     .map((a) => (

@@ -35,7 +35,7 @@ Deno.test('cenários: débito, estorno, persistência e compatibilidade do proxy
     await t.step('consulta de compatibilidade autentica sem débito', async () => {
       calls.length = 0;
       const response = await handler(new Request('https://proxy.test', { headers: { Authorization: 'Bearer test-user-token' } }));
-      assert.equal(response.status, 200); assert.deepEqual(await response.json(), { scenarios_version: 1 });
+      assert.equal(response.status, 200); assert.deepEqual(await response.json(), { scenarios_version: 1, bitcoin_version: 1 });
       assert.equal(rpc('consume_credits').length, 0);
     });
     await t.step('comparação completa custa uma análise e mantém os dois cenários no histórico', async () => {
@@ -65,6 +65,21 @@ Deno.test('cenários: débito, estorno, persistência e compatibilidade do proxy
       for (const data of [null, { scenario_request: { ...request, horizon: 21 } }, { scenario_request: request, mode: 'pergunta' }]) {
         calls.length = 0; const response = await send(data);
         assert.equal(response.status, 400); await response.text(); assert.equal(rpc('consume_credits').length, 0);
+      }
+    });
+    await t.step('Bitcoin sem fornecedor estorna sem cobrar pergunta', async () => {
+      calls.length = 0; upstream = { ...ready, scenarios: undefined, bitcoin_version: 1, no_charge: true };
+      const response = await send({ query: 'quero comprar bitcoin amanha, compensa?' });
+      assert.equal(response.status, 200); await response.text();
+      assert.equal(rpc('consume_credits').length, 1); assert.equal(rpc('refund_credits').length, 1);
+    });
+    await t.step('Bitcoin em agente antigo ou estudo inválido estorna sem salvar resposta errada', async () => {
+      for (const extra of [{}, { bitcoin_version: 1, bitcoin_study: { scope: 'research_only' } }]) {
+        calls.length = 0; upstream = { ...ready, scenarios: undefined, ...extra };
+        const response = await send({ query: 'quero comprar bitcoin amanha, compensa?' });
+        assert.equal(response.status, 502); await response.text();
+        assert.equal(rpc('refund_credits').length, 1);
+        assert.equal(calls.some(c => c.path === '/rest/v1/analyses'), false);
       }
     });
     await t.step('conversa comum sem cartão conserva cobrança de pergunta', async () => {

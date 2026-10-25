@@ -1,3 +1,4 @@
+import { isBitcoinDecision } from './bitcoin';
 import { functionsUrl, supabase } from '@/lib/supabase';
 import { AgentError, type AgentChunk, type AgentService, type AnalysisResponse, type AnalyzeRequest, type StreamOptions } from './types';
 
@@ -16,11 +17,12 @@ async function open(req: AnalyzeRequest, signal?: AbortSignal, mode: StreamOptio
   let res: Response;
   try {
     const headers = await authHeaders();
-    if (req.scenario_request) {
+    if (req.scenario_request || isBitcoinDecision(req.query)) {
       const capability = await fetch(functionsUrl('agent-proxy'), { method: 'GET', headers, signal, cache: 'no-store' });
       if (capability.status === 401) throw new AgentError('unauthorized');
-      if (!capability.ok || (await capability.json()).scenarios_version !== 1) {
-        throw new AgentError('offline', 'A comparação ainda não foi ativada no servidor. Nenhum crédito foi debitado.');
+      const supported = capability.ok ? await capability.json() : {};
+      if ((req.scenario_request && supported.scenarios_version !== 1) || (isBitcoinDecision(req.query) && supported.bitcoin_version !== 1)) {
+        throw new AgentError('offline', 'Esta análise ainda não foi ativada no servidor. Nenhum crédito foi debitado.');
       }
     }
     res = await fetch(functionsUrl('agent-proxy'), {
