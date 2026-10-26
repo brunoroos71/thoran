@@ -1,3 +1,5 @@
+import { isPortfolioDecision } from './portfolio-decision';
+import { isBitcoinDecision } from './bitcoin';
 import { functionsUrl, supabase } from '@/lib/supabase';
 import { AgentError, type AgentChunk, type AgentService, type AnalysisResponse, type AnalyzeRequest, type StreamOptions } from './types';
 
@@ -15,14 +17,24 @@ async function authHeaders(): Promise<Record<string, string>> {
 async function open(req: AnalyzeRequest, signal?: AbortSignal, mode: StreamOptions['mode'] = 'analise') {
   let res: Response;
   try {
+    const headers = await authHeaders();
+    if (req.scenario_request || isBitcoinDecision(req.query) || isPortfolioDecision(req.query)) {
+      const capability = await fetch(functionsUrl('agent-proxy'), { method: 'GET', headers, signal, cache: 'no-store' });
+      if (capability.status === 401) throw new AgentError('unauthorized');
+      const supported = capability.ok ? await capability.json() : {};
+      if ((req.scenario_request && supported.scenarios_version !== 1) || (isBitcoinDecision(req.query) && supported.bitcoin_version !== 1) || (isPortfolioDecision(req.query) && supported.portfolio_version !== 1)) {
+        throw new AgentError('offline', 'Esta análise ainda não foi ativada no servidor. Nenhum crédito foi debitado.');
+      }
+    }
     res = await fetch(functionsUrl('agent-proxy'), {
       method: 'POST',
-      headers: await authHeaders(),
+      headers,
       body: JSON.stringify({ ...req, mode }),
       signal,
     });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw e;
+    if (e instanceof AgentError) throw e;
     throw new AgentError('offline');
   }
   if (res.status === 401) throw new AgentError('unauthorized');

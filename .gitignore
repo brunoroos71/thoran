@@ -6,3 +6,6 @@ supabase/.temp
 .env.production.local
 .vercel
 *.tsbuildinfo
+
+# Estudo privado, instalado somente na demonstração local.
+public/bitcoin-research.json

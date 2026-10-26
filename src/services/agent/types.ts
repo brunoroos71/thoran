@@ -4,6 +4,8 @@
  * O agente real (função analyze, repositório trade-agent) não manda relevância nem semelhança, e o gráfico dele é só
  * do passado; por isso esses campos são opcionais.
  */
+import type { BitcoinStudy } from './bitcoin';
+import type { ScenarioRequest, ScenarioResult } from './scenario-contract';
 export type Market = 'b3' | 'crypto' | 'global';
 export type Relevance = 'baixa' | 'media' | 'atencao';
 export type Direction = 'down' | 'up' | 'neutral';
@@ -12,6 +14,7 @@ export interface AnalyzeRequest {
   query: string;
   market: Market | null;
   locale: 'pt-BR' | 'en-US';
+  scenario_request?: ScenarioRequest;
 }
 
 export interface PrecedentItem {
@@ -50,6 +53,10 @@ export interface AnalysisResponse {
   short?: string; // a versão curta (3 linhas), a que o chat mostra
   source?: string; // de onde vêm os números do cartão
   disclaimer?: string; // o front exibe o aviso padrão se vier vazio
+  bitcoin_study?: BitcoinStudy;
+  bitcoin_version?: number;
+  portfolio_version?: number;
+  scenarios?: ScenarioResult;
 }
 
 /** Pedaços do streaming: texto aos poucos e, ao final, um ou mais objetos de análise. */

@@ -1,3 +1,4 @@
+import { BitcoinComparison } from '@/components/app/BitcoinComparison';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '@/i18n';
@@ -12,6 +13,7 @@ import { Move } from '@/components/ui/Move';
 import { Disclaimer } from '@/components/ui/Disclaimer';
 import { RichText } from '@/components/ui/RichText';
 import { Feedback } from '@/components/app/Feedback';
+import { ScenarioComparison } from '@/components/app/ScenarioComparison';
 
 export default function Analysis() {
   const { id = '' } = useParams();
@@ -50,7 +52,7 @@ export default function Analysis() {
           {hasCases && <p className="label text-raio">{a.event}</p>}
           {r.event.relevance && <RelevanceBadge level={r.event.relevance} label={t.precedent.relevance[r.event.relevance]} />}
         </div>
-        <h1 className="text-display font-medium">{r.event.title}</h1>
+        <h1 className={r.scenarios ? 'text-3xl font-medium sm:text-4xl' : 'text-display font-medium'}>{r.event.title}</h1>
         <p className="text-nevoa">“{row.question}”</p>
         <p className="font-mono text-sm text-nevoa">
           {hasCases && (
@@ -61,7 +63,7 @@ export default function Analysis() {
           )}
           {fmtDate(row.created_at, locale)}
         </p>
-        {mock && <IllustrativeTag text={t.common.illustrative} />}
+        {mock && !r.bitcoin_version && !r.portfolio_version && <IllustrativeTag text={r.scenarios ? 'Demonstração · fotografia histórica de 22/10/2026' : t.common.illustrative} />}
       </header>
 
       {r.stats.length > 0 && (
@@ -82,13 +84,14 @@ export default function Analysis() {
         </section>
       )}
 
-      <section className="mt-10" aria-labelledby="why">
+      {r.scenarios ? <section className="mt-10"><ScenarioComparison result={r.scenarios} /></section> : <section className="mt-10" aria-labelledby="why">
         <h2 id="why" className="label text-nevoa">
           {a.why}
         </h2>
         <RichText text={r.explanation} className="mt-4 max-w-3xl" />
-      </section>
+      </section>}
 
+      {r.bitcoin_study && <section className="mt-6"><BitcoinComparison study={r.bitcoin_study} /></section>}
       {hasCases && (
         <section className="mt-10" aria-labelledby="prec">
           <h2 id="prec" className="label text-nevoa">
