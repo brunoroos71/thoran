@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {
+      "date": "2018-10-28",
+      "title": "2º turno de 2018",
+      "move_pct": -2.24
+    },
+    {
+      "date": "2022-10-30",
+      "title": "2º turno de 2022",
+      "move_pct": 1.31
+    }
+  ],
+  "source": "TSE (resultado) e séries oficiais (Ipeadata, Banco Central, Tesouro Direto); cálculo próprio"
+}

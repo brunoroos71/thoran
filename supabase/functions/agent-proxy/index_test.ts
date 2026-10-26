@@ -35,7 +35,7 @@ Deno.test('cenários: débito, estorno, persistência e compatibilidade do proxy
     await t.step('consulta de compatibilidade autentica sem débito', async () => {
       calls.length = 0;
       const response = await handler(new Request('https://proxy.test', { headers: { Authorization: 'Bearer test-user-token' } }));
-      assert.equal(response.status, 200); assert.deepEqual(await response.json(), { scenarios_version: 1, bitcoin_version: 1 });
+      assert.equal(response.status, 200); assert.deepEqual(await response.json(), { scenarios_version: 1, bitcoin_version: 1, portfolio_version: 1 });
       assert.equal(rpc('consume_credits').length, 0);
     });
     await t.step('comparação completa custa uma análise e mantém os dois cenários no histórico', async () => {
@@ -81,6 +81,18 @@ Deno.test('cenários: débito, estorno, persistência e compatibilidade do proxy
         assert.equal(rpc('refund_credits').length, 1);
         assert.equal(calls.some(c => c.path === '/rest/v1/analyses'), false);
       }
+    });
+    await t.step('carteira cobra pergunta, preserva análise completa e rejeita agente antigo', async () => {
+      const query = 'devido os resultados da eleicao presidencial, o que devo fazer com meus investimentos?';
+      calls.length = 0; upstream = { ...ready, scenarios: undefined, portfolio_version: 1 };
+      const response = await send({ query, mode: 'analise' });
+      assert.equal(response.status, 200); await response.text();
+      assert.deepEqual(rpc('consume_credits').map(c => c.body.p_kind), ['consumo_analise', 'consumo_pergunta']);
+      assert.equal((calls.find(c => c.path === '/rest/v1/analyses')!.body.response as typeof ready).explanation, 'Texto completo');
+      calls.length = 0; upstream = { ...ready, scenarios: undefined };
+      const old = await send({ query });
+      assert.equal(old.status, 502); await old.text();
+      assert.equal(rpc('refund_credits').length, 1);
     });
     await t.step('conversa comum sem cartão conserva cobrança de pergunta', async () => {
       calls.length = 0; upstream = { ...ready, scenarios: undefined };

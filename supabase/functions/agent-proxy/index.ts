@@ -1,3 +1,4 @@
+import { isPortfolioDecision } from '../_shared/portfolio-decision.ts';
 import { isBitcoinDecision, validBitcoinStudy } from '../_shared/bitcoin.ts';
 // POST /agent-proxy — único caminho entre o front e o agente.
 // 1) valida o usuário  2) debita créditos (antes de chamar)  3) chama o agente com a chave secreta
@@ -33,6 +34,7 @@ type Analysis = Record<string, unknown> & {
   disclaimer?: string;
   no_charge?: boolean;
   bitcoin_version?: number;
+  portfolio_version?: number;
   bitcoin_study?: unknown;
   filtered?: boolean; // o filtro de saída barrou o texto e mandou a mensagem de segurança
   scenarios?: ScenarioResult;
@@ -55,7 +57,7 @@ Deno.serve(async (req) => {
   const user = await userFromRequest(req);
   if (!user) return json({ code: 'unauthorized' }, 401);
   // Consulta sem débito: protege o cliente novo durante a publicação gradual dos dois repositórios.
-  if (req.method === 'GET') return json({ scenarios_version: 1, bitcoin_version: 1 });
+  if (req.method === 'GET') return json({ scenarios_version: 1, bitcoin_version: 1, portfolio_version: 1 });
 
   // Entrada no formato do contrato
   let input: { query?: string; market?: string | null; locale?: string; mode?: string; scenario_request?: unknown };
@@ -125,6 +127,7 @@ Deno.serve(async (req) => {
       (analysis.bitcoin_study ? !validBitcoinStudy(analysis.bitcoin_study) || analysis.bitcoin_study.scope !== 'commercial_approved' : analysis.no_charge !== true))) {
     return await failed(200, 'estudo Bitcoin ausente ou fora do contrato');
   }
+  if (!scenarioRequest && isPortfolioDecision(query) && analysis.portfolio_version !== 1) return await failed(200, 'orientação de carteira fora do contrato');
   const { query_redacted, filtered, no_charge, ...a } = analysis;
   if (!a.disclaimer) a.disclaimer = DISCLAIMER; // compliance: sempre com aviso
   const short = a.short || a.explanation;
@@ -143,7 +146,7 @@ Deno.serve(async (req) => {
   }
   // O que fica guardado é o que foi entregue: sem cartão, a versão curta.
   const stored: Analysis =
-    kind === 'consumo_pergunta' || !hasCard
+    kind === 'consumo_pergunta' || (!hasCard && a.portfolio_version !== 1)
       ? { ...a, explanation: short, precedents: { count: 0, period: { from: '', to: '' }, items: [] }, stats: [], chart: undefined }
       : a;
 

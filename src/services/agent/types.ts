@@ -55,6 +55,7 @@ export interface AnalysisResponse {
   disclaimer?: string; // o front exibe o aviso padrão se vier vazio
   bitcoin_study?: BitcoinStudy;
   bitcoin_version?: number;
+  portfolio_version?: number;
   scenarios?: ScenarioResult;
 }
 

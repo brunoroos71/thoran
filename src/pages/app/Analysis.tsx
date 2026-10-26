@@ -63,7 +63,7 @@ export default function Analysis() {
           )}
           {fmtDate(row.created_at, locale)}
         </p>
-        {mock && !r.bitcoin_version && <IllustrativeTag text={r.scenarios ? 'Demonstração · fotografia histórica de 22/10/2026' : t.common.illustrative} />}
+        {mock && !r.bitcoin_version && !r.portfolio_version && <IllustrativeTag text={r.scenarios ? 'Demonstração · fotografia histórica de 22/10/2026' : t.common.illustrative} />}
       </header>
 
       {r.stats.length > 0 && (

@@ -1,0 +1,11 @@
+# Pergunta geral sobre investimentos após a eleição
+
+A pergunta “devido os resultados da eleicao presidencial, o que devo fazer com meus investimentos?” passa pelo caminho `portfolio_v1` no endpoint analyze. A abertura apresenta a recomendação; em seguida vêm ações condicionadas à necessidade de liquidez, ao horizonte e à concentração. A justificativa vem depois, com as reações dos segundos turnos anteriores incluídos na base (2018 e 2022). Não mistura primeiro e segundo turnos, nem usa o nome do candidato como sinal de compra.
+
+Este caminho responde à pergunta geral de gestão da carteira. Não é um motor de recomendação personalizada nem uma análise automática da eleição de 2026: o resultado recente, sua surpresa e a reação atual de mercado não estão validados por este módulo. Essa ausência é explícita na resposta. A orientação de risco não é uma previsão derivada dos dois episódios históricos. Composição e prazo são solicitados para um próximo ajuste específico; não são inventados percentuais ou ativos adequados ao usuário.
+
+O texto é determinístico, com princípios de objetivos, liquidez, adequação de risco e diversificação do Portal do Investidor/CVM. Fontes constam na resposta. A lógica não substitui perguntas sobre voto, impostos, instrumentos específicos, opções ou alavancagem. O fluxo legado dessas perguntas permanece intacto. Não foram afrouxados os filtros gerais nem alterados os testes antigos de resposta direta; o novo caminho é explícito no adaptador HTTP e auditado como `portfolio_v1`.
+
+O módulo puro é copiado byte a byte para `thoran/supabase/functions/_shared/portfolio-decision.ts`. A prévia usa uma fixture dos mesmos dois casos históricos. Não usa a simulação aleatória do chat nem cobra créditos demonstrativos. O cliente exige `portfolio_version=1` na consulta de compatibilidade do proxy; agente antigo é rejeitado com estorno. Sem cartão de análise quantitativa, a cobrança pública continua a de pergunta; a explicação completa é preservada no histórico no modo análise.
+
+Validação: caso exato e variantes; exclusões; ausência de vencedor inventado; números presentes na base; ausência de evidência; preservação do histórico e cobrança; build do site; inspeção visual. A implantação pública exige atualização de analyze, proxy e site; só atualizar o frontend não altera o agente em produção.

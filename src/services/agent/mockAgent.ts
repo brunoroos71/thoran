@@ -1,3 +1,5 @@
+import { isPortfolioDecision, portfolioResponse } from './portfolio-decision';
+import electionEvidence from './election-evidence.json';
 import { bitcoinResponse, bitcoinToday, isBitcoinDecision } from './bitcoin';
 import type { AgentChunk, AgentService, AnalysisResponse, AnalyzeRequest, Direction, Market, Relevance, StreamOptions } from './types';
 import type { ScenarioResult } from './scenario-contract';
@@ -225,6 +227,13 @@ const sleep = (ms: number, signal?: AbortSignal) =>
   });
 
 async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGenerator<AgentChunk> {
+  if (!req.scenario_request && isPortfolioDecision(req.query)) {
+    const data = portfolioResponse(electionEvidence);
+    yield { type: 'text', delta: data.short };
+    yield { type: 'analysis', data };
+    yield { type: 'done' };
+    return;
+  }
   if (!req.scenario_request && isBitcoinDecision(req.query)) {
     const data = await demoBitcoin(opts.signal);
     yield { type: 'text', delta: data.short! };
@@ -258,6 +267,7 @@ async function* stream(req: AnalyzeRequest, opts: StreamOptions = {}): AsyncGene
 async function analyze(req: AnalyzeRequest, opts: { signal?: AbortSignal } = {}) {
   await sleep(400, opts.signal);
   if (req.scenario_request) return demoScenarios(req);
+  if (isPortfolioDecision(req.query)) return portfolioResponse(electionEvidence);
   if (isBitcoinDecision(req.query)) return demoBitcoin(opts.signal);
   return buildMockAnalysis(req);
 }

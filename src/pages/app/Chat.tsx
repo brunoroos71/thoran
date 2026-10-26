@@ -1,3 +1,4 @@
+import { isPortfolioDecision } from '@/services/agent/portfolio-decision';
 import { BitcoinComparison } from '@/components/app/BitcoinComparison';
 import { isBitcoinDecision } from '@/services/agent/bitcoin';
 import { useEffect, useRef, useState } from 'react';
@@ -83,7 +84,7 @@ export default function Chat() {
           }
         }
       };
-      if (mock && isBitcoinDecision(query)) await perform();
+      if (mock && (isBitcoinDecision(query) || isPortfolioDecision(query))) await perform();
       else await charge(kind, `chat_${agentId}`, perform);
       patch(agentId, (m) => ({ ...m, status: 'done' }));
     } catch (e) {
@@ -176,7 +177,7 @@ export default function Chat() {
       onStop={() => abort.current?.abort()}
       stopLabel={c.stop}
       tools={tools}
-      hint={mock && isBitcoinDecision(input) ? 'Pesquisa interna · sem cobrança' : `${cost} ${cost === 1 ? t.pricing.credit : t.pricing.credits}`}
+      hint={mock && (isBitcoinDecision(input) || isPortfolioDecision(input)) ? 'Pesquisa interna · sem cobrança' : `${cost} ${cost === 1 ? t.pricing.credit : t.pricing.credits}`}
       autoFocus
       size={msgs.length ? 'md' : 'lg'}
     />
@@ -219,7 +220,7 @@ export default function Chat() {
                       {m.status === 'streaming' && <span aria-hidden className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-raio" />}
                     </RichText>
                   )}
-                  {mock && !m.analyses.some(a => a.bitcoin_version) && m.text && m.status === 'done' && <IllustrativeTag text={t.common.illustrative} />}
+                  {mock && !m.analyses.some(a => a.bitcoin_version || a.portfolio_version) && m.text && m.status === 'done' && <IllustrativeTag text={t.common.illustrative} />}
                   {m.analyses.filter(a => a.bitcoin_study).map(a => <BitcoinComparison key={a.id} study={a.bitcoin_study!} />)}
                   {m.analyses
                     .filter((a) => a.precedents.count > 0)
